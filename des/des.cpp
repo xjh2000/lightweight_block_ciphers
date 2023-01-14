@@ -3,7 +3,6 @@
 //
 
 #include "des.h"
-#include "stdio.h"
 
 // ip permutation table
 // let plainText to left part and right part
@@ -47,15 +46,29 @@ void ip_permutation(uint64_t plainText, uint32_t *left, uint32_t *right) {
     *right = (uint32_t) (ip_permute << 32 >> 32);
 }
 
-void pc1_permutation(uint64_t key, uint32_t *C, uint32_t *D) {
-    uint64_t temp = 0;
+void pc1_permutation(uint8_t *key, uint8_t *C, uint8_t *D) {
+    uint8_t temp[7] = {0};
+    uint8_t shift_byte;
     for (int i = 0; i < 56; ++i) {
-        if (((uint64_t) 1 << (key_pc1_table[i] - 1)) & (key)) {
-            temp |= (uint64_t) 1 << i;
-        }
+        shift_byte = 0x80 >> ((key_pc1_table[i] - 1) % 8);
+        shift_byte &= key[(key_pc1_table[i] - 1) / 8];
+        shift_byte <<= (key_pc1_table[i] - 1) % 8;
+
+        temp[i / 8] |= shift_byte >> (i % 8);
     }
-    *C = (uint32_t) (temp >> 28);
-    *D = (uint32_t) (temp << 36 >> 36);
+
+    for (int i = 0; i < 3; ++i) {
+        C[i] = temp[i];
+    }
+    C[3] = temp[3] & 0xf0;
+
+    for (int i = 0; i < 3; ++i) {
+        D[i] = (temp[i + 3] & 0x0f) << 4;
+        D[i] |= (temp[i + 4] & 0xf0) >> 4;
+    }
+
+    D[3] = (temp[6] & 0x0f) << 4;
+
 }
 
 void des_encrypt(uint64_t plainText, uint64_t key, uint64_t cipherText) {
@@ -75,7 +88,7 @@ void generate_keys(uint64_t key, uint64_t *keys) {
     uint32_t C = 0;
     uint32_t D = 0;
 
-    pc1_permutation(key, &C, &D);
+//    pc1_permutation(key, &C, &D);
 
     for (int i = 0; i < 16; ++i) {
         C = (C << LS_table[i] | C >> (28 - LS_table[i])) & 0xfffffff;

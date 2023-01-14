@@ -31,5 +31,6 @@ void generate_keys(uint64_t key, uint64_t *keys);
  * @param C
  * @param D
  */
-void pc1_permutation(uint64_t key, uint32_t *C, uint32_t *D);
+void pc1_permutation(uint8_t *key, uint8_t *C, uint8_t *D);
+
 #endif //LIGHTWEIGHT_BLOCK_CIPHERS_DES_H
