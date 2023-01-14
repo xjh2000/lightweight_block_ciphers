@@ -21,7 +21,7 @@ void des_encrypt(uint64_t plainText,uint64_t key,uint64_t cipherText);
  * @param left 置换后的左半部
  * @param right 置换后的右半部
  */
-void ip_permutation( uint64_t plainText, uint32_t *left, uint32_t *right);
+void ip_permutation(uint8_t *plainText, uint8_t *left, uint8_t *right) ;
 
 void generate_keys(uint64_t key, uint64_t *keys);
 

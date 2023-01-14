@@ -35,15 +35,19 @@ const static uint8_t LS_table[16] = {
 };
 
 
-void ip_permutation(uint64_t plainText, uint32_t *left, uint32_t *right) {
-    uint64_t ip_permute = 0;
+void ip_permutation(uint8_t *plainText, uint8_t *left, uint8_t *right) {
+    uint8_t ip_permute[8] = {0};
+    uint8_t shift_byte = 0;
     for (int i = 0; i < 64; ++i) {
-        if (((uint64_t) 1 << (ip_table[i] - 1)) & (plainText)) {
-            ip_permute |= (uint64_t) 1 << i;
-        }
+        shift_byte = 0x80 >> ((ip_table[i] - 1) % 8);
+        shift_byte &= plainText[(ip_table[i] - 1) / 8];
+        shift_byte <<= (ip_table[i] - 1) % 8;
+        ip_permute[i / 8] |= shift_byte >> (i % 8);
     }
-    *left = (uint32_t) (ip_permute >> 32);
-    *right = (uint32_t) (ip_permute << 32 >> 32);
+    for (int i = 0; i < 4; ++i) {
+        left[i] = ip_permute[i];
+        right[i] = ip_permute[i + 4];
+    }
 }
 
 void pc1_permutation(uint8_t *key, uint8_t *C, uint8_t *D) {
@@ -79,7 +83,7 @@ void des_encrypt(uint64_t plainText, uint64_t key, uint64_t cipherText) {
 
     generate_keys(key, keys);
 
-    ip_permutation(plainText, &left, &right);
+//    ip_permutation(plainText, &left, &right);
 
 
 }
