@@ -11,7 +11,7 @@ class DesTest : public ::testing::Test {
 };
 
 TEST_F(DesTest, des_encrypt) {
-
+    uint8_t a = 1;
 }
 
 TEST_F(DesTest, ip_permutation) {
@@ -29,6 +29,23 @@ TEST_F(DesTest, ip_permutation) {
     }
 
 
+}
+
+TEST_F(DesTest, CD_shift) {
+    uint8_t C[4] = {0xf0, 0xcc, 0xaa, 0xf0};
+    uint8_t D[4] = {0xf0, 0xcc, 0xaa, 0xf0};
+
+    CD_shift(C, 1);
+
+    EXPECT_EQ(C[0], 0xe1);
+    EXPECT_EQ(C[1], 0x99);
+    EXPECT_EQ(C[2], 0x55);
+    EXPECT_EQ(C[3], 0xf0);
+    CD_shift(C, 1);
+    CD_shift(D, 2);
+    for (int i = 0; i < 4; ++i) {
+        EXPECT_EQ(C[i], D[i]);
+    }
 }
 
 TEST_F(DesTest, pc1_permutation) {
@@ -51,9 +68,9 @@ TEST_F(DesTest, pc1_permutation) {
 
 
 TEST_F(DesTest, generate_keys) {
-    uint64_t key = 0x133457799BBCDFF1;
-    uint64_t keys[16];
+    uint8_t key[8] = {0x13, 0x34, 0x57, 0x79, 0x9b, 0xbc, 0xdf, 0xf1};
+    uint8_t keys[][6] = {0};
 
-    generate_keys(key, keys);
+
 //    EXPECT_EQ(keys[0], 0xff);
 }
