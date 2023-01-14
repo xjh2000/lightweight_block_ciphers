@@ -29,6 +29,16 @@ const static uint8_t key_pc1_table[56] = {
         21, 13, 5, 28, 20, 12, 4
 };
 
+// pc2
+const static uint8_t key_pc2_table[48] = {
+        14, 17, 11, 24, 1, 5, 3, 28,
+        15, 6, 21, 10, 23, 19, 12, 4,
+        26, 8, 16, 7, 27, 20, 13, 2,
+        41, 52, 31, 37, 47, 55, 30, 40,
+        51, 45, 33, 48, 44, 49, 39, 56,
+        34, 53, 46, 42, 50, 36, 29, 32
+};
+
 // 每轮移动的位数
 const static uint8_t LS_table[16] = {
         1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1
@@ -115,74 +125,36 @@ void CD_shift(uint8_t *array, uint8_t shift_size) {
 
 }
 
+void pc2_permutation(uint8_t *C, uint8_t *D, uint8_t *key) {
+    int shift_size;
+    uint8_t shift_byte;
+    for (int i = 0; i < 48; ++i) {
+        shift_size = key_pc2_table[i];
+        if (shift_size <= 28) {
+            shift_byte = 0x80 >> ((shift_size - 1) % 8);
+            shift_byte &= C[(shift_size - 1) / 8];
+            shift_byte <<= ((shift_size - 1) % 8);
+        } else {
+            shift_byte = 0x80 >> ((shift_size - 29) % 8);
+            shift_byte &= D[(shift_size - 29) / 8];
+            shift_byte <<= ((shift_size - 29) % 8);
+        }
+        key[i / 8] |= (shift_byte >> i % 8);
+    }
+}
 
 void generate_keys(uint8_t *key, uint8_t **keys) {
     uint8_t C[4] = {0};
     uint8_t D[4] = {0};
     int shift_size;
-    unsigned char shift_byte, first_shift_bits, second_shift_bits, third_shift_bits, fourth_shift_bits;
 
     pc1_permutation(key, C, D);
 
     for (int i = 0; i < 16; ++i) {
         shift_size = LS_table[i];
-        if (shift_size == 1) {
-            shift_byte = 0x80;
-        } else {
-            shift_byte = 0xC0;
-        }
-
-        // Process C
-        first_shift_bits = shift_byte & C[0];
-        second_shift_bits = shift_byte & C[1];
-        third_shift_bits = shift_byte & C[2];
-        fourth_shift_bits = shift_byte & C[3];
-
-        C[0] <<= shift_size;
-        C[0] |= (second_shift_bits >> (8 - shift_size));
-
-        C[1] <<= shift_size;
-        C[1] |= (third_shift_bits >> (8 - shift_size));
-
-        C[2] <<= shift_size;
-        C[2] |= (fourth_shift_bits >> (8 - shift_size));
-
-        C[3] <<= shift_size;
-        C[3] |= (first_shift_bits >> (4 - shift_size));
-
-        // Process D
-        first_shift_bits = shift_byte & D[0];
-        second_shift_bits = shift_byte & D[1];
-        third_shift_bits = shift_byte & D[2];
-        fourth_shift_bits = shift_byte & D[3];
-
-        D[0] <<= shift_size;
-        D[0] |= (second_shift_bits >> (8 - shift_size));
-
-        D[1] <<= shift_size;
-        D[1] |= (third_shift_bits >> (8 - shift_size));
-
-        D[2] <<= shift_size;
-        D[2] |= (fourth_shift_bits >> (8 - shift_size));
-
-        D[3] <<= shift_size;
-        D[3] |= (first_shift_bits >> (4 - shift_size));
-
-
-        for (int j = 0; j < 48; ++j) {
-//            shift_size = sub_key_permutation[j];
-//            if (shift_size <= 28) {
-//                shift_byte = 0x80 >> ((shift_size - 1)%8);
-//                shift_byte &= key_sets[i].c[(shift_size - 1)/8];
-//                shift_byte <<= ((shift_size - 1)%8);
-//            } else {
-//                shift_byte = 0x80 >> ((shift_size - 29)%8);
-//                shift_byte &= key_sets[i].d[(shift_size - 29)/8];
-//                shift_byte <<= ((shift_size - 29)%8);
-//            }
-//
-//            key_sets[i].k[j/8] |= (shift_byte >> j%8);
-        }
+        CD_shift(C, shift_size);
+        CD_shift(D, shift_size);
+        pc2_permutation(C, D, &key[i]);
 
     }
 

@@ -66,6 +66,19 @@ TEST_F(DesTest, pc1_permutation) {
     EXPECT_EQ(D[3], 0xf0);
 }
 
+TEST_F(DesTest, pc2_permutation) {
+    uint8_t key[6] = {0};
+    uint8_t correct_key[6] = {0x1b, 0x02, 0xef, 0xfc, 0x70, 0x72};
+    uint8_t C[4] = {0xe1, 0x99, 0x55, 0xf0};
+    uint8_t D[4] = {0xaa, 0xcc, 0xf1, 0xe0};
+
+    pc2_permutation(C, D, key);
+
+    for (int i = 0; i < 6; ++i) {
+        EXPECT_EQ(key[i], correct_key[i]);
+    }
+}
+
 
 TEST_F(DesTest, generate_keys) {
     uint8_t key[8] = {0x13, 0x34, 0x57, 0x79, 0x9b, 0xbc, 0xdf, 0xf1};

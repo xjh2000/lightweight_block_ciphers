@@ -31,6 +31,15 @@ void ip_permutation(uint8_t *plainText, uint8_t *left, uint8_t *right);
  */
 void pc1_permutation(uint8_t *key, uint8_t *C, uint8_t *D);
 
+
+/**
+ * @brief key pc2 置换
+ * @param C
+ * @param D
+ * @param key 密钥
+ */
+void pc2_permutation(uint8_t *C, uint8_t *D, uint8_t *key);
+
 /**
  * @brief 密钥扩展
  * @param key 密钥
