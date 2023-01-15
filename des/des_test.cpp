@@ -25,6 +25,21 @@ TEST_F(DesTest, s_box_change) {
     }
 }
 
+TEST_F(DesTest, des_turn) {
+
+    uint8_t key_1[6] = {0x1b, 0x02, 0xef, 0xfc, 0x70, 0x72};
+    uint8_t left[4] = {0xcc, 0x00, 0xcc, 0xff};
+    uint8_t right[4] = {0xf0, 0xaa, 0xf0, 0xaa};
+    uint8_t left_expect[4] = {0xef, 0x4a, 0x65, 0x44};
+    des_turn(left, right, key_1);
+
+    for (int i = 0; i < 4; ++i) {
+        EXPECT_EQ(left[i], left_expect[i]);
+    }
+
+
+}
+
 TEST_F(DesTest, ip_permutation) {
     uint8_t plainText[8] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
     uint8_t left[4] = {0};

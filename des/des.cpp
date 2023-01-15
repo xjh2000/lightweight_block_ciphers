@@ -88,6 +88,12 @@ uint8_t S8[] = {13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7,
                 7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8,
                 2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11};
 
+// P盒置换
+const static uint8_t p_table[32] = {
+        16, 7, 20, 21, 29, 12, 28, 17, 1, 15, 23, 26, 5, 18, 31, 10,
+        2, 8, 24, 14, 32, 27, 3, 9, 19, 13, 30, 6, 22, 11, 4, 25
+};
+
 void ip_permutation(uint8_t *plainText, uint8_t *left, uint8_t *right) {
     uint8_t ip_permute[8] = {0};
     uint8_t shift_byte = 0;
@@ -153,9 +159,9 @@ void des_turn(uint8_t left[4], uint8_t right[4], uint8_t key[6]) {
     // extend right 32 bit to 48 bit
     for (int i = 0; i < 48; ++i) {
         shift_size = extend_32to48[i];
-        shift_byte = 0x80 >> (shift_size % 8);
-        shift_byte &= right[shift_size / 8];
-        shift_byte <<= (shift_size % 8);
+        shift_byte = 0x80 >> ((shift_size -1) % 8);
+        shift_byte &= right[(shift_size-1) / 8];
+        shift_byte <<= ((shift_size-1) % 8);
 
         right_extend[i / 8] |= shift_byte >> (i % 8);
     }
@@ -165,6 +171,27 @@ void des_turn(uint8_t left[4], uint8_t right[4], uint8_t key[6]) {
     }
     // S box change
     s_box_change(right_extend, S);
+
+    // clean right_extend for p permutation result
+    for (int i = 0; i < 4; ++i) {
+        right_extend[i] = 0;
+    }
+
+    // p permutation
+    for (int i = 0; i < 32; ++i) {
+        shift_size = p_table[i];
+        shift_byte = 0x80 >> ((shift_size-1) % 8);
+        shift_byte &= S[(shift_size-1) / 8];
+        shift_byte <<= ((shift_size-1) % 8);
+
+        right_extend[i / 8] |= shift_byte >> (i % 8);
+    }
+
+    // left xor p permutation result
+    for (int i = 0; i < 4; ++i) {
+        left[i] ^= right_extend[i];
+    }
+
 }
 
 void s_box_change(uint8_t extend[6], uint8_t S[4]) {
