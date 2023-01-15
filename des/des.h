@@ -53,6 +53,10 @@ void generate_keys(uint8_t *key, uint8_t keys[16][6]);
  * @param array CD字节数组
  * @param shift_size 左移大小 bit位单位
  */
-void CD_shift(uint8_t *array,  uint8_t shift_size);
+void CD_shift(uint8_t *array, uint8_t shift_size);
+
+void des_turn(uint8_t left[4], uint8_t right[4], uint8_t key[6]);
+
+void s_box_change(uint8_t extend[6], uint8_t S[4]);
 
 #endif //LIGHTWEIGHT_BLOCK_CIPHERS_DES_H

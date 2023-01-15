@@ -14,6 +14,17 @@ TEST_F(DesTest, des_encrypt) {
     uint8_t a = 1;
 }
 
+TEST_F(DesTest, s_box_change) {
+
+    uint8_t extend[6] = {0x61, 0x17, 0xba, 0x86, 0x65, 0x27};
+    uint8_t S[4] = {0};
+    uint8_t S_Expect[4] = {0x5c, 0x82, 0xb5, 0x97};
+    s_box_change(extend, S);
+    for (int i = 0; i < 4; ++i) {
+        EXPECT_EQ(S_Expect[i], S[i]);
+    }
+}
+
 TEST_F(DesTest, ip_permutation) {
     uint8_t plainText[8] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
     uint8_t left[4] = {0};
