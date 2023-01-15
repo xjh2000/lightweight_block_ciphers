@@ -38,14 +38,14 @@ void pc1_permutation(uint8_t *key, uint8_t *C, uint8_t *D);
  * @param D
  * @param key 密钥
  */
-void pc2_permutation(uint8_t *C, uint8_t *D, uint8_t *key);
+void pc2_permutation(uint8_t *C, uint8_t *D, uint8_t key[6]);
 
 /**
  * @brief 密钥扩展
  * @param key 密钥
  * @param keys 扩展密钥
  */
-void generate_keys(uint8_t *key, uint8_t **keys);
+void generate_keys(uint8_t *key, uint8_t keys[16][6]);
 
 
 /**

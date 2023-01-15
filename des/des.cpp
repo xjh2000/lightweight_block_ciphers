@@ -89,10 +89,15 @@ void des_encrypt(uint8_t *plainText, uint8_t *key, uint8_t *cipherText) {
 
     uint8_t left[4] = {0};
     uint8_t right[4] = {0};
-    uint8_t keys[][6] = {0};
+    uint8_t (*temp)[4] = &left;
+    uint8_t keys[16][6] = {0};
 
+    ip_permutation(plainText, left, right);
+    generate_keys(key, keys);
 
-
+    for (int i = 0; i < 15; ++i) {
+        temp = &left;
+    }
 //    ip_permutation(plainText, &left, &right);
 
 
@@ -125,7 +130,7 @@ void CD_shift(uint8_t *array, uint8_t shift_size) {
 
 }
 
-void pc2_permutation(uint8_t *C, uint8_t *D, uint8_t *key) {
+void pc2_permutation(uint8_t *C, uint8_t *D, uint8_t key[6]) {
     int shift_size;
     uint8_t shift_byte;
     for (int i = 0; i < 48; ++i) {
@@ -139,11 +144,11 @@ void pc2_permutation(uint8_t *C, uint8_t *D, uint8_t *key) {
             shift_byte &= D[(shift_size - 29) / 8];
             shift_byte <<= ((shift_size - 29) % 8);
         }
-        key[i / 8] |= (shift_byte >> i % 8);
+        key[i / 8] |= (shift_byte >> (i % 8));
     }
 }
 
-void generate_keys(uint8_t *key, uint8_t **keys) {
+void generate_keys(uint8_t *key, uint8_t keys[16][6]) {
     uint8_t C[4] = {0};
     uint8_t D[4] = {0};
     int shift_size;
@@ -154,7 +159,7 @@ void generate_keys(uint8_t *key, uint8_t **keys) {
         shift_size = LS_table[i];
         CD_shift(C, shift_size);
         CD_shift(D, shift_size);
-        pc2_permutation(C, D, &key[i]);
+        pc2_permutation(C, D, keys[i]);
 
     }
 

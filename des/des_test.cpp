@@ -82,8 +82,16 @@ TEST_F(DesTest, pc2_permutation) {
 
 TEST_F(DesTest, generate_keys) {
     uint8_t key[8] = {0x13, 0x34, 0x57, 0x79, 0x9b, 0xbc, 0xdf, 0xf1};
-    uint8_t keys[][6] = {0};
+    uint8_t keys[16][6] = {{0}};
+    uint8_t key_1[6] = {0x1b, 0x02, 0xef, 0xfc, 0x70, 0x72};
+    uint8_t key_8[6] = {0xf7, 0x8a, 0x3a, 0xc1, 0x3b, 0xfb};
+    uint8_t key_11[6] = {0x21, 0x5f, 0xd3, 0xde, 0xd3, 0x86};
+    generate_keys(key, keys);
 
-
+    for (int i = 0; i < 6; ++i) {
+        EXPECT_EQ(keys[0][i], key_1[i]);
+        EXPECT_EQ(keys[7][i], key_8[i]);
+        EXPECT_EQ(keys[10][i], key_11[i]);
+    }
 //    EXPECT_EQ(keys[0], 0xff);
 }
