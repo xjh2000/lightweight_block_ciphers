@@ -11,7 +11,15 @@ class DesTest : public ::testing::Test {
 };
 
 TEST_F(DesTest, des_encrypt) {
-    uint8_t a = 1;
+    uint8_t plainText[8] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
+    uint8_t key[8] = {0x13, 0x34, 0x57, 0x79, 0x9b, 0xbc, 0xdf, 0xf1};
+    uint8_t cipherText[8] = {0};
+    uint8_t cipherText_correct[8] = {0x85, 0xe8, 0x13, 0x54, 0x0f, 0x0a, 0xb4, 0x05,};
+    des_encrypt(plainText, key, cipherText);
+
+    for (int i = 0; i < 8; ++i) {
+        EXPECT_EQ(cipherText[i], cipherText_correct[i]);
+    }
 }
 
 TEST_F(DesTest, s_box_change) {

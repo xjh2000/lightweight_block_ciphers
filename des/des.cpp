@@ -16,6 +16,17 @@ const static uint8_t ip_table[64] = {
         61, 53, 45, 37, 29, 21, 13, 5,
         63, 55, 47, 39, 31, 23, 15, 7
 };
+//末置换
+const static uint8_t ipr_table[64] = {
+        40, 8, 48, 16, 56, 24, 64, 32,
+        39, 7, 47, 15, 55, 23, 63, 31,
+        38, 6, 46, 14, 54, 22, 62, 30,
+        37, 5, 45, 13, 53, 21, 61, 29,
+        36, 4, 44, 12, 52, 20, 60, 28,
+        35, 3, 43, 11, 51, 19, 59, 27,
+        34, 2, 42, 10, 50, 18, 58, 26,
+        33, 1, 41, 9, 49, 17, 57, 25
+};
 
 // pc1
 const static uint8_t key_pc1_table[56] = {
@@ -138,16 +149,42 @@ void des_encrypt(uint8_t *plainText, uint8_t *key, uint8_t *cipherText) {
 
     uint8_t left[4] = {0};
     uint8_t right[4] = {0};
+    uint8_t shift_size = 0;
+    uint8_t shift_byte = 0;
+    uint8_t ipr_permutation[8] = {0};
     uint8_t keys[16][6] = {0};
+    uint8_t temp;
 
     ip_permutation(plainText, left, right);
     generate_keys(key, keys);
 
     for (int i = 0; i < 15; ++i) {
         des_turn(left, right, keys[i]);
-    }
-//    ip_permutation(plainText, &left, &right);
 
+        // left and right swap
+        for (int j = 0; j < 4; ++j) {
+            temp = left[j];
+            left[j] = right[j];
+            right[j] = temp;
+        }
+    }
+    // don't swap left and right
+    des_turn(left, right, keys[15]);
+
+    for (int i = 0; i < 4; ++i) {
+        ipr_permutation[i] = left[i];
+        ipr_permutation[i + 4] = right[i];
+    }
+
+    // ipr permutation
+    for (int i = 0; i < 64; ++i) {
+        shift_size = ipr_table[i];
+        shift_byte = 0x80 >> ((shift_size - 1) % 8);
+        shift_byte &= ipr_permutation[(shift_size - 1) / 8];
+        shift_byte <<= ((shift_size - 1) % 8);
+
+        cipherText[i / 8] |= (shift_byte >> i % 8);
+    }
 
 }
 
@@ -159,9 +196,9 @@ void des_turn(uint8_t left[4], uint8_t right[4], uint8_t key[6]) {
     // extend right 32 bit to 48 bit
     for (int i = 0; i < 48; ++i) {
         shift_size = extend_32to48[i];
-        shift_byte = 0x80 >> ((shift_size -1) % 8);
-        shift_byte &= right[(shift_size-1) / 8];
-        shift_byte <<= ((shift_size-1) % 8);
+        shift_byte = 0x80 >> ((shift_size - 1) % 8);
+        shift_byte &= right[(shift_size - 1) / 8];
+        shift_byte <<= ((shift_size - 1) % 8);
 
         right_extend[i / 8] |= shift_byte >> (i % 8);
     }
@@ -180,9 +217,9 @@ void des_turn(uint8_t left[4], uint8_t right[4], uint8_t key[6]) {
     // p permutation
     for (int i = 0; i < 32; ++i) {
         shift_size = p_table[i];
-        shift_byte = 0x80 >> ((shift_size-1) % 8);
-        shift_byte &= S[(shift_size-1) / 8];
-        shift_byte <<= ((shift_size-1) % 8);
+        shift_byte = 0x80 >> ((shift_size - 1) % 8);
+        shift_byte &= S[(shift_size - 1) / 8];
+        shift_byte <<= ((shift_size - 1) % 8);
 
         right_extend[i / 8] |= shift_byte >> (i % 8);
     }

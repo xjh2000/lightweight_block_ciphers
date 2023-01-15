@@ -13,7 +13,7 @@
  * @param key 密钥 64 bit
  * @param cipherText 密文 64 bit
  */
-void des_encrypt(uint64_t plainText, uint64_t key, uint64_t cipherText);
+void des_encrypt(uint8_t *plainText, uint8_t *key, uint8_t *cipherText);
 
 /**
  * @brief 初始置换ip
