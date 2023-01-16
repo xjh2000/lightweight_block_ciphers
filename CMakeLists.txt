@@ -10,7 +10,7 @@ include_directories(des)
 
 enable_testing()
 
-add_executable(lightweight_block_ciphers des/des_test.cpp des/des.cpp)
+add_executable(lightweight_block_ciphers des/des_test.cpp des/des.c)
 
 
 target_link_libraries(

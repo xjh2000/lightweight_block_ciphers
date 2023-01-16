@@ -5,6 +5,10 @@
 #ifndef LIGHTWEIGHT_BLOCK_CIPHERS_DES_H
 #define LIGHTWEIGHT_BLOCK_CIPHERS_DES_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "stdint.h"
 
 /**
@@ -54,9 +58,23 @@ void generate_keys(uint8_t *key, uint8_t keys[16][6]);
  * @param shift_size 左移大小 bit位单位
  */
 void CD_shift(uint8_t *array, uint8_t shift_size);
-
+/**
+ * @brief des 轮函数
+ * @param left
+ * @param right
+ * @param key 密钥
+ */
 void des_turn(uint8_t left[4], uint8_t right[4], uint8_t key[6]);
 
+/**
+ * @brief S盒代换
+ * @param extend E扩展后的数据
+ * @param S S盒
+ */
 void s_box_change(uint8_t extend[6], uint8_t S[4]);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //LIGHTWEIGHT_BLOCK_CIPHERS_DES_H
