@@ -382,4 +382,47 @@ void generate_keys(uint8_t *key, uint8_t keys[16][6]) {
 
 }
 
+void des_decrypt(uint8_t *cipherText, uint8_t *key, uint8_t *plainText) {
+
+    uint8_t left[4] = {0};
+    uint8_t right[4] = {0};
+    uint8_t shift_size = 0;
+    uint8_t shift_byte = 0;
+    uint8_t ipr_permutation[8] = {0};
+    uint8_t keys[16][6] = {0};
+    uint8_t temp;
+
+    ip_permutation(cipherText, left, right);
+    generate_keys(key, keys);
+
+    for (int i = 15; i > 0; --i) {
+        des_turn(left, right, keys[i]);
+
+        // left and right swap
+        for (int j = 0; j < 4; ++j) {
+            temp = left[j];
+            left[j] = right[j];
+            right[j] = temp;
+        }
+    }
+    // don't swap left and right
+    des_turn(left, right, keys[0]);
+
+    for (int i = 0; i < 4; ++i) {
+        ipr_permutation[i] = left[i];
+        ipr_permutation[i + 4] = right[i];
+    }
+
+    // ipr permutation
+    for (int i = 0; i < 64; ++i) {
+        shift_size = ipr_table[i];
+        shift_byte = 0x80 >> ((shift_size - 1) % 8);
+        shift_byte &= ipr_permutation[(shift_size - 1) / 8];
+        shift_byte <<= ((shift_size - 1) % 8);
+
+        plainText[i / 8] |= (shift_byte >> i % 8);
+    }
+
+}
+
 

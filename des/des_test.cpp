@@ -22,6 +22,21 @@ TEST_F(DesTest, des_encrypt) {
     }
 }
 
+TEST_F(DesTest, des_decrypt) {
+    uint8_t plainText[8] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
+    uint8_t key[8] = {0x13, 0x34, 0x57, 0x79, 0x9b, 0xbc, 0xdf, 0xf1};
+    uint8_t cipherText[8] = {0};
+    uint8_t decryptText[8] = {0};
+
+    des_encrypt(plainText, key, cipherText);
+    des_decrypt(cipherText, key, decryptText);
+
+    for (int i = 0; i < 8; ++i) {
+        EXPECT_EQ(plainText[i], decryptText[i]);
+    }
+}
+
+
 TEST_F(DesTest, s_box_change) {
 
     uint8_t extend[6] = {0x61, 0x17, 0xba, 0x86, 0x65, 0x27};

@@ -20,6 +20,14 @@ extern "C" {
 void des_encrypt(uint8_t *plainText, uint8_t *key, uint8_t *cipherText);
 
 /**
+ * @brief des 加密
+ * @param cipherText 密文 64 bit
+ * @param key 密钥 64 bit
+ * @param plainText 明文 64 bit
+ */
+void des_decrypt(uint8_t *cipherText, uint8_t *key, uint8_t *plainText);
+
+/**
  * @brief 初始置换ip
  * @param plainText 明文
  * @param left 置换后的左半部
