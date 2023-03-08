@@ -105,7 +105,7 @@ const static uint8_t p_table[32] = {
         2, 8, 24, 14, 32, 27, 3, 9, 19, 13, 30, 6, 22, 11, 4, 25
 };
 
-void ip_permutation(uint8_t *plainText, uint8_t *left, uint8_t *right) {
+void des_ip_permutation(uint8_t *plainText, uint8_t *left, uint8_t *right) {
     uint8_t ip_permute[8] = {0};
     uint8_t shift_byte = 0;
     for (int i = 0; i < 64; ++i) {
@@ -120,7 +120,7 @@ void ip_permutation(uint8_t *plainText, uint8_t *left, uint8_t *right) {
     }
 }
 
-void pc1_permutation(uint8_t *key, uint8_t *C, uint8_t *D) {
+void des_pc1_permutation(uint8_t *key, uint8_t *C, uint8_t *D) {
     uint8_t temp[7] = {0};
     uint8_t shift_byte;
     for (int i = 0; i < 56; ++i) {
@@ -155,8 +155,8 @@ void des_encrypt(uint8_t *plainText, uint8_t *key, uint8_t *cipherText) {
     uint8_t keys[16][6] = {0};
     uint8_t temp;
 
-    ip_permutation(plainText, left, right);
-    generate_keys(key, keys);
+    des_ip_permutation(plainText, left, right);
+    des_generate_keys(key, keys);
 
     for (int i = 0; i < 15; ++i) {
         des_turn(left, right, keys[i]);
@@ -207,7 +207,7 @@ void des_turn(uint8_t left[4], uint8_t right[4], uint8_t key[6]) {
         right_extend[i] ^= key[i];
     }
     // S box change
-    s_box_change(right_extend, S);
+    des_s_box_change(right_extend, S);
 
     // clean right_extend for p permutation result
     for (int i = 0; i < 4; ++i) {
@@ -231,7 +231,7 @@ void des_turn(uint8_t left[4], uint8_t right[4], uint8_t key[6]) {
 
 }
 
-void s_box_change(uint8_t extend[6], uint8_t S[4]) {
+void des_s_box_change(uint8_t extend[6], uint8_t S[4]) {
     uint8_t row, column;
 
     for (int i = 0; i < 4; ++i) {
@@ -320,7 +320,7 @@ void s_box_change(uint8_t extend[6], uint8_t S[4]) {
 
 }
 
-void CD_shift(uint8_t *array, uint8_t shift_size) {
+void des_CD_shift(uint8_t *array, uint8_t shift_size) {
     unsigned char shift_byte, first_shift_bits, second_shift_bits, third_shift_bits, fourth_shift_bits;
     shift_byte = 0x80;
     for (int i = 1; i < shift_size; ++i) {
@@ -347,7 +347,7 @@ void CD_shift(uint8_t *array, uint8_t shift_size) {
 
 }
 
-void pc2_permutation(uint8_t *C, uint8_t *D, uint8_t key[6]) {
+void des_pc2_permutation(uint8_t *C, uint8_t *D, uint8_t key[6]) {
     int shift_size;
     uint8_t shift_byte;
     for (int i = 0; i < 48; ++i) {
@@ -365,18 +365,18 @@ void pc2_permutation(uint8_t *C, uint8_t *D, uint8_t key[6]) {
     }
 }
 
-void generate_keys(uint8_t *key, uint8_t keys[16][6]) {
+void des_generate_keys(uint8_t *key, uint8_t keys[16][6]) {
     uint8_t C[4] = {0};
     uint8_t D[4] = {0};
     int shift_size;
 
-    pc1_permutation(key, C, D);
+    des_pc1_permutation(key, C, D);
 
     for (int i = 0; i < 16; ++i) {
         shift_size = LS_table[i];
-        CD_shift(C, shift_size);
-        CD_shift(D, shift_size);
-        pc2_permutation(C, D, keys[i]);
+        des_CD_shift(C, shift_size);
+        des_CD_shift(D, shift_size);
+        des_pc2_permutation(C, D, keys[i]);
 
     }
 
@@ -392,8 +392,8 @@ void des_decrypt(uint8_t *cipherText, uint8_t *key, uint8_t *plainText) {
     uint8_t keys[16][6] = {0};
     uint8_t temp;
 
-    ip_permutation(cipherText, left, right);
-    generate_keys(key, keys);
+    des_ip_permutation(cipherText, left, right);
+    des_generate_keys(key, keys);
 
     for (int i = 15; i > 0; --i) {
         des_turn(left, right, keys[i]);

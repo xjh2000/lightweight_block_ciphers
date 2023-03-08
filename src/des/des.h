@@ -33,7 +33,7 @@ void des_decrypt(uint8_t *cipherText, uint8_t *key, uint8_t *plainText);
  * @param left 置换后的左半部
  * @param right 置换后的右半部
  */
-void ip_permutation(uint8_t *plainText, uint8_t *left, uint8_t *right);
+void des_ip_permutation(uint8_t *plainText, uint8_t *left, uint8_t *right);
 
 /**
  * @brief key pc1 置换
@@ -41,7 +41,7 @@ void ip_permutation(uint8_t *plainText, uint8_t *left, uint8_t *right);
  * @param C
  * @param D
  */
-void pc1_permutation(uint8_t *key, uint8_t *C, uint8_t *D);
+void des_pc1_permutation(uint8_t *key, uint8_t *C, uint8_t *D);
 
 
 /**
@@ -50,14 +50,14 @@ void pc1_permutation(uint8_t *key, uint8_t *C, uint8_t *D);
  * @param D
  * @param key 密钥
  */
-void pc2_permutation(uint8_t *C, uint8_t *D, uint8_t key[6]);
+void des_pc2_permutation(uint8_t *C, uint8_t *D, uint8_t key[6]);
 
 /**
  * @brief 密钥扩展
  * @param key 密钥
  * @param keys 扩展密钥
  */
-void generate_keys(uint8_t *key, uint8_t keys[16][6]);
+void des_generate_keys(uint8_t *key, uint8_t keys[16][6]);
 
 
 /**
@@ -65,7 +65,7 @@ void generate_keys(uint8_t *key, uint8_t keys[16][6]);
  * @param array CD字节数组
  * @param shift_size 左移大小 bit位单位
  */
-void CD_shift(uint8_t *array, uint8_t shift_size);
+void des_CD_shift(uint8_t *array, uint8_t shift_size);
 /**
  * @brief des 轮函数
  * @param left
@@ -79,7 +79,7 @@ void des_turn(uint8_t left[4], uint8_t right[4], uint8_t key[6]);
  * @param extend E扩展后的数据
  * @param S S盒
  */
-void s_box_change(uint8_t extend[6], uint8_t S[4]);
+void des_s_box_change(uint8_t extend[6], uint8_t S[4]);
 
 #ifdef __cplusplus
 }

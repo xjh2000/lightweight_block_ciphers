@@ -4,13 +4,11 @@ project(lightweight_block_ciphers)
 # dependence
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/GoogleTest.cmake)
 
-set(CMAKE_CXX_STANDARD 14)
-
-include_directories(des)
+set(CMAKE_CXX_STANDARD 17)
 
 enable_testing()
 
-add_executable(lightweight_block_ciphers des/des_test.cpp des/des.c)
+add_executable(lightweight_block_ciphers src/des/des_test.cpp src/des/des.c src/aes/aes.c src/aes/aes.h src/des/des.h src/aes/aes_test.cpp)
 
 
 target_link_libraries(
