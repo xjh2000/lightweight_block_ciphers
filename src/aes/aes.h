@@ -20,9 +20,16 @@ void aes_key_expand(uint8_t key[16], uint8_t keys[176]);
 
 /**
  * 行移位变换 循环左移
- * @param text 变换文本
+ * @param state 变换文本
  */
-void aes_shift_row(uint8_t text[16]);
+void aes_shift_row(uint8_t state[16]);
+
+/**
+ * 列混淆变化
+ * @param state 原文本
+ * @param nextState 变化后文本
+ */
+void aes_mix_columns(uint8_t state[16],uint8_t nextState[16]);
 
 #ifdef __cplusplus
 }

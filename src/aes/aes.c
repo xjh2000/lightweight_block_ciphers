@@ -28,6 +28,13 @@ static uint8_t SBOX[256] = {
         0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf,
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16};
 
+static inline uint8_t mul2(uint8_t a) {
+    return (a & 0x80) ? ((a << 1) ^ 0x1b) : (a << 1);
+}
+
+static inline uint8_t mul3(uint8_t a) {
+    return mul2(a) ^ a;
+}
 
 void aes_key_expand(uint8_t *key, uint8_t *keys) {
     uint8_t temp[4];        // W[i-1] or temp(W[i-1])
@@ -73,27 +80,50 @@ void aes_key_expand(uint8_t *key, uint8_t *keys) {
     }
 }
 
-void aes_shift_row(uint8_t *text) {
+void aes_shift_row(uint8_t *state) {
     uint8_t temp;
 
     // row 1 , shift 1 byte
-    temp = *(text + 1);
-    *(text + 1) = *(text + 5);
-    *(text + 5) = *(text + 9);
-    *(text + 9) = *(text + 13);
-    *(text + 13) = temp;
+    temp = *(state + 1);
+    *(state + 1) = *(state + 5);
+    *(state + 5) = *(state + 9);
+    *(state + 9) = *(state + 13);
+    *(state + 13) = temp;
     // row 2 , shift 2 byte
-    temp = *(text + 2);
-    *(text + 2) = *(text + 10);
-    *(text + 10) = temp;
-    temp = *(text + 6);
-    *(text + 6) = *(text + 14);
-    *(text + 14) = temp;
+    temp = *(state + 2);
+    *(state + 2) = *(state + 10);
+    *(state + 10) = temp;
+    temp = *(state + 6);
+    *(state + 6) = *(state + 14);
+    *(state + 14) = temp;
 
     // row 3 , shift 3 byte
-    temp = *(text + 15);
-    *(text + 15) = *(text + 11);
-    *(text + 11) = *(text + 7);
-    *(text + 7) = *(text + 3);
-    *(text + 3) = temp;
+    temp = *(state + 15);
+    *(state + 15) = *(state + 11);
+    *(state + 11) = *(state + 7);
+    *(state + 7) = *(state + 3);
+    *(state + 3) = temp;
 }
+
+void aes_mix_columns(uint8_t *state, uint8_t *nextState) {
+    /*
+     * MixColumns
+     * [02 03 01 01]   [s0  s4  s8  s12]
+     * [01 02 03 01] . [s1  s5  s9  s13]
+     * [01 01 02 03]   [s2  s6  s10 s14]
+     * [03 01 01 02]   [s3  s7  s11 s15]
+     */
+    for (int i = 0; i < 4; ++i) {
+        nextState[0 + i * 4] = mul2(state[0 + i * 4]) ^ mul3(state[1 + i * 4]) ^ state[2 + i * 4] ^ state[3 + i * 4];
+
+        nextState[1 + i * 4] = state[0 + i * 4] ^ mul2(state[1 + i * 4]) ^ mul3(state[2 + i * 4]) ^ state[3 + i * 4];
+
+        nextState[2 + i * 4] = state[0 + i * 4] ^ (state[1 + i * 4]) ^ mul2(state[2 + i * 4]) ^ mul3(state[3 + i * 4]);
+
+        nextState[3 + i * 4] =
+                mul3(state[0 + i * 4]) ^ (state[1 + i * 4]) ^ (state[2 + i * 4]) ^ mul2(state[3 + i * 4]);
+    }
+
+
+}
+

@@ -51,3 +51,28 @@ TEST_F(AesTest, aes_shift_row) {
         EXPECT_EQ(text[i], shift_row_text[i]);
     }
 }
+
+
+TEST_F(AesTest, aes_mix_columns) {
+    uint8_t text[16] = {
+            0xd4, 0xbf, 0x5d, 0x30,
+            0xe0, 0xb4, 0x52, 0xae,
+            0xb8, 0x41, 0x11, 0xf1,
+            0x1e, 0x27, 0x98, 0xe5,
+    };
+
+    uint8_t mix_columns_text[16] = {0};
+    uint8_t expect_mix_columns_text[16] = {
+            0x04, 0x66, 0x81, 0xe5,
+            0xe0, 0xcb, 0x19, 0x9a,
+            0x48, 0xf8, 0xd3, 0x7a,
+            0x28, 0x06, 0x26, 0x4c,
+    };
+
+
+    aes_mix_columns(text, mix_columns_text);
+
+    for (int i = 0; i < 16; ++i) {
+        EXPECT_EQ(expect_mix_columns_text[i], mix_columns_text[i]);
+    }
+}
