@@ -29,3 +29,25 @@ TEST_F(AesTest, aes_key_expand) {
         EXPECT_EQ(noMultipleOf4[i], keys[20 + i]);
     }
 }
+
+
+TEST_F(AesTest, aes_shift_row) {
+    uint8_t text[16] = {
+            1, 2, 3, 4,
+            5, 6, 7, 8,
+            9, 10, 11, 12,
+            13, 14, 15, 16
+    };
+
+    uint8_t shift_row_text[16] = {
+            1, 6, 11, 16,
+            5, 10, 15, 4,
+            9, 14, 3, 8,
+            13, 2, 7, 12
+    };
+
+    aes_shift_row(text);
+    for (int i = 0; i < 16; ++i) {
+        EXPECT_EQ(text[i], shift_row_text[i]);
+    }
+}

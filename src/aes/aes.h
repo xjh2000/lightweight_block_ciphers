@@ -18,8 +18,14 @@ extern "C" {
  */
 void aes_key_expand(uint8_t key[16], uint8_t keys[176]);
 
+/**
+ * 行移位变换 循环左移
+ * @param text 变换文本
+ */
+void aes_shift_row(uint8_t text[16]);
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif //LIGHTWEIGHT_BLOCK_CIPHERS_AES_H
+#endif; //LIGHTWEIGHT_BLOCK_CIPHERS_AES_H

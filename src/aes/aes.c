@@ -30,7 +30,7 @@ static uint8_t SBOX[256] = {
 
 
 void aes_key_expand(uint8_t *key, uint8_t *keys) {
-    uint8_t temp[4];        // W[i-1] or T(W[i-1])
+    uint8_t temp[4];        // W[i-1] or temp(W[i-1])
     uint8_t *last4bytes;    // point to the last 4 bytes of one round
     uint8_t *lastRound;     // W[i-4]
     uint8_t i;
@@ -71,4 +71,29 @@ void aes_key_expand(uint8_t *key, uint8_t *keys) {
         *keys++ = *last4bytes++ ^ *lastRound++;
         *keys++ = *last4bytes++ ^ *lastRound++;
     }
+}
+
+void aes_shift_row(uint8_t *text) {
+    uint8_t temp;
+
+    // row 1 , shift 1 byte
+    temp = *(text + 1);
+    *(text + 1) = *(text + 5);
+    *(text + 5) = *(text + 9);
+    *(text + 9) = *(text + 13);
+    *(text + 13) = temp;
+    // row 2 , shift 2 byte
+    temp = *(text + 2);
+    *(text + 2) = *(text + 10);
+    *(text + 10) = temp;
+    temp = *(text + 6);
+    *(text + 6) = *(text + 14);
+    *(text + 14) = temp;
+
+    // row 3 , shift 3 byte
+    temp = *(text + 15);
+    *(text + 15) = *(text + 11);
+    *(text + 11) = *(text + 7);
+    *(text + 7) = *(text + 3);
+    *(text + 3) = temp;
 }
