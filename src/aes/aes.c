@@ -127,3 +127,53 @@ void aes_mix_columns(uint8_t *state, uint8_t *nextState) {
 
 }
 
+void aes_encrypt(uint8_t *plainText, uint8_t *key, uint8_t *cipherText) {
+    uint8_t keys[176] = {0};
+    uint8_t state[16] = {0};
+    uint8_t tempState[16] = {0};
+
+    aes_key_expand(key, keys);
+
+    // first AddRoundKey
+    for (int i = 0; i < 16; ++i) {
+        state[i] = plainText[i] ^ keys[i];
+    }
+
+    // 9 rounds
+    for (int i = 1; i < 10; ++i) {
+        // SubBytes
+        for (int j = 0; j < 16; ++j) {
+            state[j] = SBOX[state[j]];
+        }
+        // shift row
+        aes_shift_row(state);
+
+        // mix columns
+        aes_mix_columns(state, tempState);
+
+        // add round key
+        for (int j = 0; j < 16; ++j) {
+            state[j] = tempState[j] ^ keys[j + i * 16];
+        }
+    }
+
+    // last round
+
+    // SubBytes
+    for (int i = 0; i < 16; ++i) {
+        state[i] = SBOX[state[i]];
+    }
+    // shift row
+    aes_shift_row(state);
+
+    // add round key
+    for (int i = 0; i < 16; ++i) {
+        state[i] = state[i] ^ keys[i + 10 * 16];
+    }
+
+    // out put
+    for (int i = 0; i < 16; ++i) {
+        cipherText[i] = state[i];
+    }
+}
+

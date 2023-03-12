@@ -29,7 +29,15 @@ void aes_shift_row(uint8_t state[16]);
  * @param state 原文本
  * @param nextState 变化后文本
  */
-void aes_mix_columns(uint8_t state[16],uint8_t nextState[16]);
+void aes_mix_columns(uint8_t state[16], uint8_t nextState[16]);
+
+/**
+ * aes 128 加密
+ * @param plainText 明文
+ * @param key 密钥
+ * @param cipherText 密文
+ */
+void aes_encrypt(uint8_t plainText[16], uint8_t key[16], uint8_t cipherText[16]);
 
 #ifdef __cplusplus
 }
