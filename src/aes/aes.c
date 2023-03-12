@@ -114,11 +114,14 @@ void aes_mix_columns(uint8_t *state, uint8_t *nextState) {
      * [03 01 01 02]   [s3  s7  s11 s15]
      */
     for (int i = 0; i < 4; ++i) {
-        nextState[0 + i * 4] = mul2(state[0 + i * 4]) ^ mul3(state[1 + i * 4]) ^ state[2 + i * 4] ^ state[3 + i * 4];
+        nextState[0 + i * 4] =
+                mul2(state[0 + i * 4]) ^ mul3(state[1 + i * 4]) ^ (state[2 + i * 4]) ^ (state[3 + i * 4]);
 
-        nextState[1 + i * 4] = state[0 + i * 4] ^ mul2(state[1 + i * 4]) ^ mul3(state[2 + i * 4]) ^ state[3 + i * 4];
+        nextState[1 + i * 4] =
+                (state[0 + i * 4]) ^ mul2(state[1 + i * 4]) ^ mul3(state[2 + i * 4]) ^ (state[3 + i * 4]);
 
-        nextState[2 + i * 4] = state[0 + i * 4] ^ (state[1 + i * 4]) ^ mul2(state[2 + i * 4]) ^ mul3(state[3 + i * 4]);
+        nextState[2 + i * 4] =
+                (state[0 + i * 4]) ^ (state[1 + i * 4]) ^ mul2(state[2 + i * 4]) ^ mul3(state[3 + i * 4]);
 
         nextState[3 + i * 4] =
                 mul3(state[0 + i * 4]) ^ (state[1 + i * 4]) ^ (state[2 + i * 4]) ^ mul2(state[3 + i * 4]);
