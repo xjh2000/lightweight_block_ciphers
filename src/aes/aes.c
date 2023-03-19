@@ -58,16 +58,19 @@ static inline uint8_t mul3(uint8_t a) {
 }
 
 static inline uint8_t mul9(uint8_t a) {
-    return mul2(mul2(mul2(a)))^a;
+    return mul2(mul2(mul2(a))) ^ a;
 }
+
 static inline uint8_t mulb(uint8_t a) {
-    return mul9(a)^mul2(a);
+    return mul9(a) ^ mul2(a);
 }
+
 static inline uint8_t muld(uint8_t a) {
-    return mul9(a)^mul2(mul2(a));
+    return mul9(a) ^ mul2(mul2(a));
 }
+
 static inline uint8_t mule(uint8_t a) {
-    return mul2(mul2(mul2(a)))^mul2(mul2(a))^mul2(a);
+    return mul2(mul2(mul2(a))) ^ mul2(mul2(a)) ^ mul2(a);
 }
 
 void aes_key_expand(uint8_t *key, uint8_t *keys) {
@@ -219,26 +222,26 @@ void aes_inv_shift_row(uint8_t *state) {
     uint8_t temp;
 
     // row 1 , shift 1 byte
-    temp        = *(state+13);
-    *(state+13) = *(state+9);
-    *(state+9)  = *(state+5);
-    *(state+5)  = *(state+1);
-    *(state+1)  = temp;
+    temp = *(state + 13);
+    *(state + 13) = *(state + 9);
+    *(state + 9) = *(state + 5);
+    *(state + 5) = *(state + 1);
+    *(state + 1) = temp;
 
     // row 2 , shift 2 byte
-    temp        = *(state+14);
-    *(state+14) = *(state+6);
-    *(state+6)  = temp;
-    temp        = *(state+10);
-    *(state+10) = *(state+2);
-    *(state+2)  = temp;
+    temp = *(state + 14);
+    *(state + 14) = *(state + 6);
+    *(state + 6) = temp;
+    temp = *(state + 10);
+    *(state + 10) = *(state + 2);
+    *(state + 2) = temp;
 
     // row 3 , shift 3 byte
-    temp        = *(state+3);
-    *(state+3)  = *(state+7);
-    *(state+7)  = *(state+11);
-    *(state+11) = *(state+15);
-    *(state+15) = temp;
+    temp = *(state + 3);
+    *(state + 3) = *(state + 7);
+    *(state + 7) = *(state + 11);
+    *(state + 11) = *(state + 15);
+    *(state + 15) = temp;
 }
 
 void aes_inv_mix_columns(uint8_t *state, uint8_t *nextState) {
@@ -262,5 +265,63 @@ void aes_inv_mix_columns(uint8_t *state, uint8_t *nextState) {
         nextState[3 + i * 4] =
                 mulb(state[0 + i * 4]) ^ muld(state[1 + i * 4]) ^ mul9(state[2 + i * 4]) ^ mule(state[3 + i * 4]);
     }
+}
+
+void aes_decrypt(uint8_t *cipherText, uint8_t *key, uint8_t *plainText) {
+
+    uint8_t keys[176] = {0};
+    uint8_t state[16] = {0};
+    uint8_t tempState[16] = {0};
+
+    aes_key_expand(key, keys);
+
+    // first AddRoundKey
+    for (int i = 0; i < 16; ++i) {
+        state[i] = cipherText[i] ^ keys[i + 160];
+    }
+
+    // 9 rounds
+    for (int i = 9; i > 0; i--) {
+        // inv shift row
+        aes_inv_shift_row(state);
+
+        // inv SubBytes
+        for (int j = 0; j < 16; ++j) {
+            state[j] = INV_SBOX[state[j]];
+        }
+
+        // add round key
+        for (int j = 0; j < 16; ++j) {
+            state[j] = state[j] ^ keys[j + i * 16];
+        }
+
+        // inv mix columns
+        aes_inv_mix_columns(state, tempState);
+        for (int j = 0; j < 16; ++j) {
+            state[j] = tempState[j];
+        }
+    }
+
+    // last round
+
+    // inv shift row
+    aes_inv_shift_row(state);
+
+
+    // inv SubBytes
+    for (int j = 0; j < 16; ++j) {
+        state[j] = INV_SBOX[state[j]];
+    }
+
+    // add round key
+    for (int j = 0; j < 16; ++j) {
+        state[j] = state[j] ^ keys[j];
+    }
+
+    // out put
+    for (int i = 0; i < 16; ++i) {
+        plainText[i] = state[i];
+    }
+
 }
 
