@@ -97,6 +97,26 @@ TEST_F(AesTest, aes_mix_columns) {
     }
 }
 
+TEST_F(AesTest, aes_inv_mix_columns) {
+    uint8_t text[16] = {
+            0xd4, 0xbf, 0x5d, 0x30,
+            0xe0, 0xb4, 0x52, 0xae,
+            0xb8, 0x41, 0x11, 0xf1,
+            0x1e, 0x27, 0x98, 0xe5,
+    };
+
+    uint8_t mix_columns_text[16] = {0};
+    uint8_t mix_inv_columns_text[16] = {0};
+
+    aes_mix_columns(text, mix_columns_text);
+    aes_inv_mix_columns(mix_columns_text, mix_inv_columns_text);
+
+    for (int i = 0; i < 16; ++i) {
+        EXPECT_EQ(text[i], mix_inv_columns_text[i]);
+    }
+}
+
+
 TEST_F(AesTest, aes_encrypt) {
     // 6b c1 be e2 [0-3]
     // 2e 40 9f 96 [4-7]

@@ -57,6 +57,19 @@ static inline uint8_t mul3(uint8_t a) {
     return mul2(a) ^ a;
 }
 
+static inline uint8_t mul9(uint8_t a) {
+    return mul2(mul2(mul2(a)))^a;
+}
+static inline uint8_t mulb(uint8_t a) {
+    return mul9(a)^mul2(a);
+}
+static inline uint8_t muld(uint8_t a) {
+    return mul9(a)^mul2(mul2(a));
+}
+static inline uint8_t mule(uint8_t a) {
+    return mul2(mul2(mul2(a)))^mul2(mul2(a))^mul2(a);
+}
+
 void aes_key_expand(uint8_t *key, uint8_t *keys) {
     uint8_t temp[4];        // W[i-1] or temp(W[i-1])
     uint8_t *last4bytes;    // point to the last 4 bytes of one round
@@ -226,5 +239,28 @@ void aes_inv_shift_row(uint8_t *state) {
     *(state+7)  = *(state+11);
     *(state+11) = *(state+15);
     *(state+15) = temp;
+}
+
+void aes_inv_mix_columns(uint8_t *state, uint8_t *nextState) {
+    /*
+        * Inverse MixColumns
+        * [0e 0b 0d 09]   [s0  s4  s8  s12]
+        * [09 0e 0b 0d] . [s1  s5  s9  s13]
+        * [0d 09 0e 0b]   [s2  s6  s10 s14]
+        * [0b 0d 09 0e]   [s3  s7  s11 s15]
+        */
+    for (int i = 0; i < 4; ++i) {
+        nextState[0 + i * 4] =
+                mule(state[0 + i * 4]) ^ mulb(state[1 + i * 4]) ^ muld(state[2 + i * 4]) ^ mul9(state[3 + i * 4]);
+
+        nextState[1 + i * 4] =
+                mul9(state[0 + i * 4]) ^ mule(state[1 + i * 4]) ^ mulb(state[2 + i * 4]) ^ muld(state[3 + i * 4]);
+
+        nextState[2 + i * 4] =
+                muld(state[0 + i * 4]) ^ mul9(state[1 + i * 4]) ^ mule(state[2 + i * 4]) ^ mulb(state[3 + i * 4]);
+
+        nextState[3 + i * 4] =
+                mulb(state[0 + i * 4]) ^ muld(state[1 + i * 4]) ^ mul9(state[2 + i * 4]) ^ mule(state[3 + i * 4]);
+    }
 }
 

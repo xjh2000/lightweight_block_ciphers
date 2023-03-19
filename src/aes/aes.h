@@ -38,6 +38,13 @@ void aes_inv_shift_row(uint8_t state[16]);
 void aes_mix_columns(uint8_t state[16], uint8_t nextState[16]);
 
 /**
+ * 逆列混淆变化
+ * @param state 原文本
+ * @param nextState 变化后文本
+ */
+void aes_inv_mix_columns(uint8_t state[16], uint8_t nextState[16]);
+
+/**
  * aes 128 加密
  * @param plainText 明文
  * @param key 密钥
