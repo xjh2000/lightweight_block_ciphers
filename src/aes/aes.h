@@ -25,6 +25,12 @@ void aes_key_expand(uint8_t key[16], uint8_t keys[176]);
 void aes_shift_row(uint8_t state[16]);
 
 /**
+ * 逆行移位变换 循环右移
+ * @param state 变换文本
+ */
+void aes_inv_shift_row(uint8_t state[16]);
+
+/**
  * 列混淆变化
  * @param state 原文本
  * @param nextState 变化后文本

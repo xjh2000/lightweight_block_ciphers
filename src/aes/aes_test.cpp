@@ -52,6 +52,26 @@ TEST_F(AesTest, aes_shift_row) {
     }
 }
 
+TEST_F(AesTest, aes_inv_shift_row) {
+    uint8_t text[16] = {
+            1, 2, 3, 4,
+            5, 6, 7, 8,
+            9, 10, 11, 12,
+            13, 14, 15, 16
+    };
+    uint8_t text1[16] = {
+            1, 2, 3, 4,
+            5, 6, 7, 8,
+            9, 10, 11, 12,
+            13, 14, 15, 16
+    };
+    aes_shift_row(text);
+    aes_inv_shift_row(text);
+    for (int i = 0; i < 16; ++i) {
+        EXPECT_EQ(text[i], text1[i]);
+    }
+}
+
 
 TEST_F(AesTest, aes_mix_columns) {
     uint8_t text[16] = {

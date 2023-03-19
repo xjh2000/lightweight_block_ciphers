@@ -28,6 +28,8 @@ static uint8_t SBOX[256] = {
         0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf,
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16};
 
+
+
 static inline uint8_t mul2(uint8_t a) {
     return (a & 0x80) ? ((a << 1) ^ 0x1b) : (a << 1);
 }
@@ -89,6 +91,7 @@ void aes_shift_row(uint8_t *state) {
     *(state + 5) = *(state + 9);
     *(state + 9) = *(state + 13);
     *(state + 13) = temp;
+
     // row 2 , shift 2 byte
     temp = *(state + 2);
     *(state + 2) = *(state + 10);
@@ -178,5 +181,31 @@ void aes_encrypt(uint8_t *plainText, uint8_t *key, uint8_t *cipherText) {
     for (int i = 0; i < 16; ++i) {
         cipherText[i] = state[i];
     }
+}
+
+void aes_inv_shift_row(uint8_t *state) {
+    uint8_t temp;
+
+    // row 1 , shift 1 byte
+    temp        = *(state+13);
+    *(state+13) = *(state+9);
+    *(state+9)  = *(state+5);
+    *(state+5)  = *(state+1);
+    *(state+1)  = temp;
+
+    // row 2 , shift 2 byte
+    temp        = *(state+14);
+    *(state+14) = *(state+6);
+    *(state+6)  = temp;
+    temp        = *(state+10);
+    *(state+10) = *(state+2);
+    *(state+2)  = temp;
+
+    // row 3 , shift 3 byte
+    temp        = *(state+3);
+    *(state+3)  = *(state+7);
+    *(state+7)  = *(state+11);
+    *(state+11) = *(state+15);
+    *(state+15) = temp;
 }
 
