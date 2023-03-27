@@ -116,6 +116,133 @@ TEST_F(AesTest, aes_inv_mix_columns) {
     }
 }
 
+TEST_F(AesTest, aes_encrypt_plus) {
+    // 6b c1 be e2 [0-3]
+    // 2e 40 9f 96 [4-7]
+    // e9 3d 7e 11 [8-11]
+    // 73 93 17 2a [12-15]
+    uint8_t plainText[16] = {
+            0x6b, 0xc1, 0xbe, 0xe2,
+            0x2e, 0x40, 0x9f, 0x96,
+            0xe9, 0x3d, 0x7e, 0x11,
+            0x73, 0x93, 0x17, 0x2a,
+    };
+    // 2b 7e 15 16
+    // 28 ae d2 a6
+    // ab f7 15 88
+    // 09 cf 4f 3c
+    uint8_t key[16] = {
+            0x2b, 0x7e, 0x15, 0x16,
+            0x28, 0xae, 0xd2, 0xa6,
+            0xab, 0xf7, 0x15, 0x88,
+            0x09, 0xcf, 0x4f, 0x3c,
+    };
+    uint8_t cipherText[16] = {0};
+
+    // 3a d7 7b b4
+    // 0d 7a 36 60
+    // a8 9e ca f3
+    // 24 66 ef 97
+    uint8_t expect_cipherText[16] = {
+            0x3a, 0xd7, 0x7b, 0xb4,
+            0x0d, 0x7a, 0x36, 0x60,
+            0xa8, 0x9e, 0xca, 0xf3,
+            0x24, 0x66, 0xef, 0x97,
+    };
+
+
+    aes_encrypt_plus(plainText, key, cipherText);
+
+    for (int i = 0; i < 16; ++i) {
+        EXPECT_EQ(expect_cipherText[i], cipherText[i]);
+    }
+}
+
+TEST_F(AesTest, aes_encrypt_plus_benchmark) {
+    // 6b c1 be e2 [0-3]
+    // 2e 40 9f 96 [4-7]
+    // e9 3d 7e 11 [8-11]
+    // 73 93 17 2a [12-15]
+    uint8_t plainText[16] = {
+            0x6b, 0xc1, 0xbe, 0xe2,
+            0x2e, 0x40, 0x9f, 0x96,
+            0xe9, 0x3d, 0x7e, 0x11,
+            0x73, 0x93, 0x17, 0x2a,
+    };
+    // 2b 7e 15 16
+    // 28 ae d2 a6
+    // ab f7 15 88
+    // 09 cf 4f 3c
+    uint8_t key[16] = {
+            0x2b, 0x7e, 0x15, 0x16,
+            0x28, 0xae, 0xd2, 0xa6,
+            0xab, 0xf7, 0x15, 0x88,
+            0x09, 0xcf, 0x4f, 0x3c,
+    };
+    uint8_t cipherText[16] = {0};
+
+    // 3a d7 7b b4
+    // 0d 7a 36 60
+    // a8 9e ca f3
+    // 24 66 ef 97
+    uint8_t expect_cipherText[16] = {
+            0x3a, 0xd7, 0x7b, 0xb4,
+            0x0d, 0x7a, 0x36, 0x60,
+            0xa8, 0x9e, 0xca, 0xf3,
+            0x24, 0x66, 0xef, 0x97,
+    };
+
+    for (int i = 0; i < 1000000; ++i) {
+        aes_encrypt_plus(plainText, key, cipherText);
+    }
+
+    for (int i = 0; i < 16; ++i) {
+        EXPECT_EQ(expect_cipherText[i], cipherText[i]);
+    }
+}
+
+TEST_F(AesTest, aes_encrypt_benchmark) {
+    // 6b c1 be e2 [0-3]
+    // 2e 40 9f 96 [4-7]
+    // e9 3d 7e 11 [8-11]
+    // 73 93 17 2a [12-15]
+    uint8_t plainText[16] = {
+            0x6b, 0xc1, 0xbe, 0xe2,
+            0x2e, 0x40, 0x9f, 0x96,
+            0xe9, 0x3d, 0x7e, 0x11,
+            0x73, 0x93, 0x17, 0x2a,
+    };
+    // 2b 7e 15 16
+    // 28 ae d2 a6
+    // ab f7 15 88
+    // 09 cf 4f 3c
+    uint8_t key[16] = {
+            0x2b, 0x7e, 0x15, 0x16,
+            0x28, 0xae, 0xd2, 0xa6,
+            0xab, 0xf7, 0x15, 0x88,
+            0x09, 0xcf, 0x4f, 0x3c,
+    };
+    uint8_t cipherText[16] = {0};
+
+    // 3a d7 7b b4
+    // 0d 7a 36 60
+    // a8 9e ca f3
+    // 24 66 ef 97
+    uint8_t expect_cipherText[16] = {
+            0x3a, 0xd7, 0x7b, 0xb4,
+            0x0d, 0x7a, 0x36, 0x60,
+            0xa8, 0x9e, 0xca, 0xf3,
+            0x24, 0x66, 0xef, 0x97,
+    };
+
+    for (int i = 0; i < 1000000; ++i) {
+        aes_encrypt(plainText, key, cipherText);
+    }
+
+    for (int i = 0; i < 16; ++i) {
+        EXPECT_EQ(expect_cipherText[i], cipherText[i]);
+    }
+}
 
 TEST_F(AesTest, aes_encrypt) {
     // 6b c1 be e2 [0-3]
