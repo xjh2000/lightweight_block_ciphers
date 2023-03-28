@@ -60,6 +60,11 @@ void aes_encrypt(uint8_t plainText[16], uint8_t key[16], uint8_t cipherText[16])
 void aes_encrypt_plus(uint8_t plainText[16], uint8_t key[16], uint8_t cipherText[16]);
 
 /**
+ * 生成优化后加密轮中所需T表
+ */
+void aes_generate_t_tables();
+
+/**
  * aes 128 解密
  * @param cipherText 密文
  * @param key 密钥

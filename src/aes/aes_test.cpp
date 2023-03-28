@@ -317,3 +317,7 @@ TEST_F(AesTest, aes_decrypt) {
         EXPECT_EQ(plainText[i], decryptText[i]);
     }
 }
+
+TEST_F(AesTest, aes_generate_t_tables) {
+    aes_generate_t_tables();
+}
