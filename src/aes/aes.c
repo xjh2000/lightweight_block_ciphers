@@ -540,43 +540,43 @@ void aes_encrypt_plus(uint8_t *plainText, uint8_t *key, uint8_t *cipherText) {
     const uint32_t * rks = (uint32_t*)keys;
     const uint8_t * ks = keys;
     const uint32_t * pt  = (uint32_t*)plainText;
-    uint32_t t0, t1, t2, t3, u0, u1, u2, u3;
+    uint32_t column0, column1, column2, column3, tempColumn0, tempColumn1, tempColumn2, tempColumn3;
 
-    t0 = pt[0] ^ *rks++;
-    t1 = pt[1] ^ *rks++;
-    t2 = pt[2] ^ *rks++;
-    t3 = pt[3] ^ *rks++;
+    column0 = pt[0] ^ *rks++;
+    column1 = pt[1] ^ *rks++;
+    column2 = pt[2] ^ *rks++;
+    column3 = pt[3] ^ *rks++;
 
     // 9 rounds
     for (i = 1; i < 10; ++i) {
-        u0 = T0[(uint8_t)t0] ^ T1[(uint8_t)(t1>>8)] ^ T2[(uint8_t)(t2>>16)] ^ T3[t3>>24];
-        u1 = T0[(uint8_t)t1] ^ T1[(uint8_t)(t2>>8)] ^ T2[(uint8_t)(t3>>16)] ^ T3[t0>>24];
-        u2 = T0[(uint8_t)t2] ^ T1[(uint8_t)(t3>>8)] ^ T2[(uint8_t)(t0>>16)] ^ T3[t1>>24];
-        u3 = T0[(uint8_t)t3] ^ T1[(uint8_t)(t0>>8)] ^ T2[(uint8_t)(t1>>16)] ^ T3[t2>>24];
+        tempColumn0 = T0[(uint8_t)column0] ^ T1[(uint8_t)(column1 >> 8)] ^ T2[(uint8_t)(column2 >> 16)] ^ T3[column3 >> 24];
+        tempColumn1 = T0[(uint8_t)column1] ^ T1[(uint8_t)(column2 >> 8)] ^ T2[(uint8_t)(column3 >> 16)] ^ T3[column0 >> 24];
+        tempColumn2 = T0[(uint8_t)column2] ^ T1[(uint8_t)(column3 >> 8)] ^ T2[(uint8_t)(column0 >> 16)] ^ T3[column1 >> 24];
+        tempColumn3 = T0[(uint8_t)column3] ^ T1[(uint8_t)(column0 >> 8)] ^ T2[(uint8_t)(column1 >> 16)] ^ T3[column2 >> 24];
 
-        t0 = u0 ^ *rks++;
-        t1 = u1 ^ *rks++;
-        t2 = u2 ^ *rks++;
-        t3 = u3 ^ *rks++;
+        column0 = tempColumn0 ^ *rks++;
+        column1 = tempColumn1 ^ *rks++;
+        column2 = tempColumn2 ^ *rks++;
+        column3 = tempColumn3 ^ *rks++;
     }
 
     ks += 160;
-    cipherText[0]  = SBOX[(uint8_t)t0]       ^ *ks++;
-    cipherText[1]  = SBOX[(uint8_t)(t1>>8)]  ^ *ks++;
-    cipherText[2]  = SBOX[(uint8_t)(t2>>16)] ^ *ks++;
-    cipherText[3]  = SBOX[t3>>24]            ^ *ks++;
-    cipherText[4]  = SBOX[(uint8_t)t1]       ^ *ks++;
-    cipherText[5]  = SBOX[(uint8_t)(t2>>8)]  ^ *ks++;
-    cipherText[6]  = SBOX[(uint8_t)(t3>>16)] ^ *ks++;
-    cipherText[7]  = SBOX[t0>>24]            ^ *ks++;
-    cipherText[8]  = SBOX[(uint8_t)t2]       ^ *ks++;
-    cipherText[9]  = SBOX[(uint8_t)(t3>>8)]  ^ *ks++;
-    cipherText[10] = SBOX[(uint8_t)(t0>>16)] ^ *ks++;
-    cipherText[11] = SBOX[t1>>24]            ^ *ks++;
-    cipherText[12] = SBOX[(uint8_t)t3]       ^ *ks++;
-    cipherText[13] = SBOX[(uint8_t)(t0>>8)]  ^ *ks++;
-    cipherText[14] = SBOX[(uint8_t)(t1>>16)] ^ *ks++;
-    cipherText[15] = SBOX[t2>>24]            ^ *ks++;
+    cipherText[0]  = SBOX[(uint8_t)column0] ^ *ks++;
+    cipherText[1]  = SBOX[(uint8_t)(column1 >> 8)] ^ *ks++;
+    cipherText[2]  = SBOX[(uint8_t)(column2 >> 16)] ^ *ks++;
+    cipherText[3]  = SBOX[column3 >> 24] ^ *ks++;
+    cipherText[4]  = SBOX[(uint8_t)column1] ^ *ks++;
+    cipherText[5]  = SBOX[(uint8_t)(column2 >> 8)] ^ *ks++;
+    cipherText[6]  = SBOX[(uint8_t)(column3 >> 16)] ^ *ks++;
+    cipherText[7]  = SBOX[column0 >> 24] ^ *ks++;
+    cipherText[8]  = SBOX[(uint8_t)column2] ^ *ks++;
+    cipherText[9]  = SBOX[(uint8_t)(column3 >> 8)] ^ *ks++;
+    cipherText[10] = SBOX[(uint8_t)(column0 >> 16)] ^ *ks++;
+    cipherText[11] = SBOX[column1 >> 24] ^ *ks++;
+    cipherText[12] = SBOX[(uint8_t)column3] ^ *ks++;
+    cipherText[13] = SBOX[(uint8_t)(column0 >> 8)] ^ *ks++;
+    cipherText[14] = SBOX[(uint8_t)(column1 >> 16)] ^ *ks++;
+    cipherText[15] = SBOX[column2 >> 24] ^ *ks++;
 
 }
 
