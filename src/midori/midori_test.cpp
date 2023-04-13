@@ -30,6 +30,16 @@ TEST_F(MidoriTest, midori_shuffle_cell) {
     }
 }
 
+TEST_F(MidoriTest, midori_inv_shuffle_cell) {
+    uint8_t state[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    uint8_t expect_state[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    midori_shuffle_cell(state);
+    midori_inv_shuffle_cell(state);
+    for (int i = 0; i < 16; ++i) {
+        EXPECT_EQ(state[i], expect_state[i]);
+    }
+}
+
 TEST_F(MidoriTest, midori_mix_column) {
     uint8_t state[16] = {1, 2, 3, 4, 4, 3, 2, 1, 9, 8, 7, 6, 6, 7, 8, 9};
     uint8_t expect_state[16] = {5, 6, 7, 0, 0, 7, 6, 5, 9, 8, 7, 6, 6, 7, 8, 9};

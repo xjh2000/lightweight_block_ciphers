@@ -11,23 +11,23 @@
 extern "C" {
 #endif
 
-void midori_sp1(uint8_t * cell);
+void midori_sp1(uint8_t *cell);
 
-void midori_inv_sp1(uint8_t * cell);
+void midori_inv_sp1(uint8_t *cell);
 
-void midori_sp2(uint8_t* cell);
+void midori_sp2(uint8_t *cell);
 
-void midori_inv_sp2(uint8_t* cell);
+void midori_inv_sp2(uint8_t *cell);
 
-void midori_sp3(uint8_t* cell);
+void midori_sp3(uint8_t *cell);
 
-void midori_inv_sp3(uint8_t* cell);
+void midori_inv_sp3(uint8_t *cell);
 
-void midori_sp4(uint8_t* cell);
+void midori_sp4(uint8_t *cell);
 
-void midori_inv_sp4(uint8_t* cell);
+void midori_inv_sp4(uint8_t *cell);
 
-void midori_encrypt(const uint8_t plainText[16],uint8_t key[16],uint8_t cipherText[16]);
+void midori_encrypt(const uint8_t plainText[16], uint8_t key[16], uint8_t cipherText[16]);
 
 /**
  * S box
@@ -40,6 +40,12 @@ void midori_sub_cell(uint8_t state[16]);
  * @param state 中间值
  */
 void midori_shuffle_cell(uint8_t state[16]);
+
+/**
+ * 反洗一下牌
+ * @param state 中间值
+ */
+void midori_inv_shuffle_cell(uint8_t state[16]);
 
 /**
  * 列混淆 MDS 矩阵
