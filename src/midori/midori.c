@@ -162,19 +162,19 @@ void midori_sub_cell(uint8_t *state) {
 
     for (int i = 0; i < 4; ++i) {
         midori_sp1(&state[0 + i * 4]);
-        state[0 + i * 4] = sbox1[state[0 + i * 4] >> 4] << 4 | sbox1[state[0 + i * 4] << 4 >> 4];
+        state[0 + i * 4] = sbox1[state[0 + i * 4] >> 4] << 4 | sbox1[(uint8_t) (state[0 + i * 4] << 4) >> 4];
         midori_inv_sp1(&state[0 + i * 4]);
 
         midori_sp2(&state[1 + i * 4]);
-        state[1 + i * 4] = sbox1[state[1 + i * 4] >> 4] << 4 | sbox1[state[1 + i * 4] << 4 >> 4];
+        state[1 + i * 4] = sbox1[state[1 + i * 4] >> 4] << 4 | sbox1[(uint8_t) (state[1 + i * 4] << 4) >> 4];
         midori_inv_sp2(&state[1 + i * 4]);
 
         midori_sp3(&state[2 + i * 4]);
-        state[2 + i * 4] = sbox1[state[2 + i * 4] >> 4] << 4 | sbox1[state[2 + i * 4] << 4 >> 4];
+        state[2 + i * 4] = sbox1[state[2 + i * 4] >> 4] << 4 | sbox1[(uint8_t) (state[2 + i * 4] << 4 )>> 4];
         midori_inv_sp3(&state[2 + i * 4]);
 
         midori_sp4(&state[3 + i * 4]);
-        state[3 + i * 4] = sbox1[state[3 + i * 4] >> 4] << 4 | sbox1[state[3 + i * 4] << 4 >> 4];
+        state[3 + i * 4] = sbox1[state[3 + i * 4] >> 4] << 4 | sbox1[(uint8_t) (state[3 + i * 4] << 4) >> 4];
         midori_inv_sp4(&state[3 + i * 4]);
 
     }

@@ -39,6 +39,21 @@ TEST_F(MidoriTest, midori_mix_column) {
     }
 }
 
+TEST_F(MidoriTest, midori_sub_cell) {
+    uint8_t state[16] = {1,2,3,4,
+                         1,2,3,4,
+                         1,2,3,4,
+                         1,2,3,4,};
+    uint8_t expect_state[16] = {16, 75, 67, 162,
+                                16, 75, 67, 162,
+                                16, 75, 67, 162,
+                                16, 75, 67, 162, };
+    midori_sub_cell(state);
+    for (int i = 0; i < 16; ++i) {
+        EXPECT_EQ(state[i], expect_state[i]);
+    }
+}
+
 TEST_F(MidoriTest, midori_sp) {
     uint8_t array[6] = {0x11, 0xc2, 0x84, 0x38, 0xdc, 0xf1};
     uint8_t expect_array[6] = {0x11, 0xc2, 0x84, 0x38, 0xdc, 0xf1};
