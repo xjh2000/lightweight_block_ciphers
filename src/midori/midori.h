@@ -27,7 +27,20 @@ void midori_sp4(uint8_t *cell);
 
 void midori_inv_sp4(uint8_t *cell);
 
+/**
+ * midori 128 加密
+ * @param plainText 明文
+ * @param key 密钥
+ * @param cipherText 密文
+ */
 void midori_encrypt(const uint8_t plainText[16], uint8_t key[16], uint8_t cipherText[16]);
+/**
+ * midori 128 解密
+ * @param cipherText 密文
+ * @param key 密钥
+ * @param plainText 明文
+ */
+void midori_decrypt(const uint8_t cipherText[16], uint8_t key[16], uint8_t plainText[16]);
 
 /**
  * S box

@@ -21,6 +21,18 @@ TEST_F(MidoriTest, midori_encrypt) {
     }
 }
 
+TEST_F(MidoriTest, midori_decrypt) {
+    uint8_t plainText[16] = {1,2,3,4,5,6,7,8,10,11,12,13,14,15,16,17};
+    uint8_t key[16] = {0};
+    uint8_t cipherText[16] = {0};
+    uint8_t expect_plainText[16] = {1,2,3,4,5,6,7,8,10,11,12,13,14,15,16,17};
+    midori_encrypt(plainText, key, cipherText);
+    midori_decrypt(cipherText, key, plainText);
+    for (int i = 0; i < 16; ++i) {
+        EXPECT_EQ(plainText[i], expect_plainText[i]);
+    }
+}
+
 TEST_F(MidoriTest, midori_shuffle_cell) {
     uint8_t state[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
     uint8_t expect_state[16] = {0, 10, 5, 15, 14, 4, 11, 1, 9, 3, 12, 6, 7, 13, 2, 8};

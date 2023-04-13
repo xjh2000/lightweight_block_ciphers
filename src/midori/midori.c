@@ -170,7 +170,7 @@ void midori_sub_cell(uint8_t *state) {
         midori_inv_sp2(&state[1 + i * 4]);
 
         midori_sp3(&state[2 + i * 4]);
-        state[2 + i * 4] = sbox1[state[2 + i * 4] >> 4] << 4 | sbox1[(uint8_t) (state[2 + i * 4] << 4 )>> 4];
+        state[2 + i * 4] = sbox1[state[2 + i * 4] >> 4] << 4 | sbox1[(uint8_t) (state[2 + i * 4] << 4) >> 4];
         midori_inv_sp3(&state[2 + i * 4]);
 
         midori_sp4(&state[3 + i * 4]);
@@ -291,6 +291,32 @@ void midori_inv_sp4(uint8_t *cell) {
     *cell = tempCell;
 }
 
+void midori_inv_shuffle_cell(uint8_t *state) {
+    uint8_t tempState[16] = {0};
+
+    // (0,1,2,...,15) <- (0,7,14,9,5,2,11,12,15,8,1,6,10,13,4,3)
+    tempState[0] = state[0];
+    tempState[1] = state[7];
+    tempState[2] = state[14];
+    tempState[3] = state[9];
+    tempState[4] = state[5];
+    tempState[5] = state[2];
+    tempState[6] = state[11];
+    tempState[7] = state[12];
+    tempState[8] = state[15];
+    tempState[9] = state[8];
+    tempState[10] = state[1];
+    tempState[11] = state[6];
+    tempState[12] = state[10];
+    tempState[13] = state[13];
+    tempState[14] = state[4];
+    tempState[15] = state[3];
+
+    for (int i = 0; i < 16; ++i) {
+        state[i] = tempState[i];
+    }
+}
+
 void midori_encrypt(const uint8_t *plainText, uint8_t *key, uint8_t *cipherText) {
     uint8_t round_keys[304] = {0};
     uint8_t state[16] = {0};
@@ -316,28 +342,30 @@ void midori_encrypt(const uint8_t *plainText, uint8_t *key, uint8_t *cipherText)
     }
 }
 
-void midori_inv_shuffle_cell(uint8_t *state) {
-    uint8_t tempState[16] = {0};
-
-    // (0,1,2,...,15) <- (0,7,14,9,5,2,11,12,15,8,1,6,10,13,4,3)
-    tempState[0] = state[0];
-    tempState[1] = state[7];
-    tempState[2] = state[14];
-    tempState[3] = state[9];
-    tempState[4] = state[5];
-    tempState[5] = state[2];
-    tempState[6] = state[11];
-    tempState[7] = state[12];
-    tempState[8] = state[15];
-    tempState[9] = state[8];
-    tempState[10] = state[1];
-    tempState[11] = state[6];
-    tempState[12] = state[10];
-    tempState[13] = state[13];
-    tempState[14] = state[4];
-    tempState[15] = state[3];
+void midori_decrypt(const uint8_t *cipherText, uint8_t *key, uint8_t *plainText) {
+    uint8_t round_keys[304] = {0};
+    uint8_t state[16] = {0};
+    midori_key_generation(key, round_keys);
 
     for (int i = 0; i < 16; ++i) {
-        state[i] = tempState[i];
+        state[i] = cipherText[i] ^ key[i];
+    }
+
+    for (int i = 18; i >= 0; --i) {
+        midori_sub_cell(state);
+        midori_mix_column(state);
+        midori_inv_shuffle_cell(state);
+
+        midori_mix_column(&round_keys[i * 16]);
+        midori_inv_shuffle_cell(&round_keys[i * 16]);
+        for (int j = 0; j < 16; ++j) {
+            state[j] = state[j] ^ round_keys[j + i * 16];
+        }
+    }
+
+    midori_sub_cell(state);
+
+    for (int i = 0; i < 16; ++i) {
+        plainText[i] = state[i] ^ key[i];
     }
 }
