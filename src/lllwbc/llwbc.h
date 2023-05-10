@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 
-
+void llwbc_key_schedule();
 
 #ifdef __cplusplus
 }
