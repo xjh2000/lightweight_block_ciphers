@@ -1,10 +1,12 @@
 # Some  Block Ciphers
-- Implementations of some  block ciphers in c 
-- unit test with googletest in cpp
+- Implementations of some  block ciphers in python
 
-## implement
+
+
+## implement c 
+
+more detail see branch c 
 
 - des
 - aes
 - midori
-- lllwbc
