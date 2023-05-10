@@ -8,7 +8,6 @@
 class LlwbcTest : public ::testing::Test {
 };
 
-
 TEST_F(LlwbcTest, llwbc_key_schedule) {
     uint8_t key[16] = {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
                        0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11,};
@@ -76,4 +75,14 @@ TEST_F(LlwbcTest, llwbc_key_schedule) {
     }
 
 
+}
+
+TEST_F(LlwbcTest, llwbc_f) {
+    uint8_t state = 0x45;
+    uint8_t state_expect = 0xb9;
+    bool stateB[8];
+    byte_to_bit(state, stateB);
+    llwbc_f(stateB);
+    bit_to_byte(stateB, &state);
+    EXPECT_EQ(state, state_expect);
 }

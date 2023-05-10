@@ -30,6 +30,8 @@ uint8_t cks[21][4] = {
         {0x13, 0x19, 0x8a, 0x2e},
 };
 
+uint8_t sbox[16] = {0x0B, 0x0F, 0x03, 0x02, 0x0A, 0x0C, 0x09, 0x01, 0x06, 0x07, 0x08, 0x00, 0x0E, 0x05, 0x0D, 0x04};
+
 void llwbc_key_schedule(bool *key, bool (*kws)[64], bool (*krs)[32]) {
     // K = kw || ke
 
@@ -79,3 +81,45 @@ void llwbc_key_schedule(bool *key, bool (*kws)[64], bool (*krs)[32]) {
         }
     }
 }
+
+static inline uint8_t mul2(uint8_t a) {
+    return (a & 0x08) ? ((a << 1) & 0x0f ^ 0x03) : (a << 1);
+}
+
+static inline uint8_t mul3(uint8_t a) {
+    return mul2(a) ^ a;
+}
+
+void llwbc_f(bool *state) {
+    bool u0b[8] = {0};
+    bool u1b[8] = {0};
+    uint8_t u0 = 0;
+    uint8_t u1 = 0;
+    uint8_t tu0 = 0;
+    uint8_t tu1 = 0;
+
+    for (int i = 4; i < 8; ++i) {
+        u0b[i] = state[i - 4];
+        u1b[i] = state[i];
+    }
+
+    bit_to_byte(u0b, &u0);
+    bit_to_byte(u1b, &u1);
+
+    u0 = sbox[u0];
+    u1 = sbox[u1];
+
+    tu0 = mul2(u0) ^ mul3(u1);
+    tu1 = u0 ^ u1;
+
+    u0 = tu0;
+    u1 = tu1;
+
+    u0 = sbox[u0];
+    u1 = sbox[u1];
+
+    u0 = u0 << 4 | u1;
+
+    byte_to_bit(u0, state);
+}
+

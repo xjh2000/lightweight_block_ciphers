@@ -19,6 +19,12 @@ extern "C" {
  */
 void llwbc_key_schedule(bool key[128], bool kws[2][64],bool krs[21][32]);
 
+/**
+ * 轮函数f
+ * @param state 中间状态
+ */
+void llwbc_f(bool state[8]);
+
 #ifdef __cplusplus
 }
 #endif
