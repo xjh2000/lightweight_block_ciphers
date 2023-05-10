@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 enable_testing()
 
-add_executable(lightweight_block_ciphers src/des/des_test.cpp src/des/des.c src/aes/aes.c src/aes/aes.h src/des/des.h src/aes/aes_test.cpp src/midori/midori.c src/midori/midori.h src/midori/midori_test.cpp)
+add_executable(lightweight_block_ciphers src/des/des_test.cpp src/des/des.c src/aes/aes.c src/aes/aes.h src/des/des.h src/aes/aes_test.cpp src/midori/midori.c src/midori/midori.h src/midori/midori_test.cpp src/lllwbc/llwbc.c src/lllwbc/llwbc.h src/lllwbc/llwbc_test.cpp)
 
 
 target_link_libraries(
