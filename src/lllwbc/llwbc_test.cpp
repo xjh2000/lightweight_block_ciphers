@@ -133,11 +133,11 @@ TEST_F(LlwbcTest, llwbc_encrypt) {
     // Key : 01 23 45 67 89 ab cd ef fe dc ba 98 76 54 32 10
     // CipherText : 4d ac 97 75 8b 96 f3 83
     uint8_t plain_text[8] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
-    bool plain_textB[64] = {0};
+    bool plain_textB[64] = {false};
     uint8_t key[16] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10};
-    bool keyB[128] = {0};
+    bool keyB[128] = {false};
     uint8_t cipher_text[8] = {0};
-    bool cipher_textB[64] = {0};
+    bool cipher_textB[64] = {false};
     uint8_t cipher_text_expect[8] = {0x4d, 0xac, 0x97, 0x75, 0x8b, 0x96, 0xf3, 0x83};
 
     for (int i = 0; i < 8; ++i) {
@@ -154,5 +154,36 @@ TEST_F(LlwbcTest, llwbc_encrypt) {
 
     for (int i = 0; i < 8; ++i) {
         EXPECT_EQ(cipher_text_expect[i], cipher_text[i]);
+    }
+}
+
+TEST_F(LlwbcTest, llwbc_decrypt) {
+    // PlainText : 01 23 45 67 89 ab cd ef
+    // Key : 01 23 45 67 89 ab cd ef fe dc ba 98 76 54 32 10
+    // CipherText : 4d ac 97 75 8b 96 f3 83
+    uint8_t plain_text[8] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
+    bool plain_textB[64] = {false};
+    uint8_t key[16] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10};
+    bool keyB[128] = {false};
+    uint8_t cipher_text[8] = {0};
+    bool cipher_textB[64] = {false};
+    uint8_t plain_text_expect[8] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
+
+    for (int i = 0; i < 8; ++i) {
+        byte_to_bit(plain_text[i], plain_textB + (i * 8));
+    }
+    for (int i = 0; i < 16; ++i) {
+        byte_to_bit(key[i], keyB + (i * 8));
+    }
+
+    llwbc_encrypt(plain_textB, keyB, cipher_textB);
+    llwbc_decrypt(cipher_textB, keyB, plain_textB);
+
+    for (int i = 0; i < 8; ++i) {
+        bit_to_byte(plain_textB + (i * 8), plain_text + i);
+    }
+
+    for (int i = 0; i < 8; ++i) {
+        EXPECT_EQ(plain_text_expect[i], plain_text[i]);
     }
 }

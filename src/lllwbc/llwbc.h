@@ -38,12 +38,20 @@ void llwbc_p(bool state64[64]);
 void llwbc_p_inverse(bool state64[64]);
 
 /**
- * llwbc-64/128
+ * llwbc-64/128 加密
  * @param plain_text 明文
  * @param key 密钥
  * @param cipher_text 密文
  */
 void llwbc_encrypt(const bool plain_text[64], bool key[128], bool cipher_text[64]);
+
+/**
+ * llwbc-64/128 解密
+ * @param cipher_text 密文
+ * @param key 密钥
+ * @param plain_text 明文
+ */
+void llwbc_decrypt(const bool cipher_text[64], bool key[128], bool plain_text[64]);
 
 #ifdef __cplusplus
 }

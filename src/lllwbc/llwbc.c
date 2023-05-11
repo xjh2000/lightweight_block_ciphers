@@ -271,3 +271,126 @@ void llwbc_encrypt(const bool *plain_text, bool *key, bool *cipher_text) {
     }
 }
 
+void llwbc_decrypt(const bool *cipher_text, bool *key, bool *plain_text) {
+    bool state[64];
+    bool kws[2][64];
+    bool krs[21][32];
+
+    // alpha = C0AC29B7
+    uint8_t a[4] = {0xc0, 0xac, 0x29, 0xb7};
+    bool aB[32] = {0};
+    for (int i = 0; i < 4; ++i) {
+        byte_to_bit(a[i], aB + (i * 8));
+    }
+
+    for (int i = 0; i < 32; ++i) {
+        key[96 + i] = key[96 + i] ^ aB[i];
+    }
+
+    for (int i = 0; i < 64; ++i) {
+        state[i] = cipher_text[i];
+    }
+
+    llwbc_key_schedule(key, kws, krs);
+
+    // s ^ kw1
+    for (int i = 0; i < 64; ++i) {
+        state[i] = state[i] ^ kws[1][i];
+    }
+
+    bool tb8[8] = {0};
+
+    // 1-10 round
+    for (int i = 0; i < 10; ++i) {
+        // i = round number
+        // j = byte level index
+        // k = bit level index
+        // 4 * 16 = 64
+        for (int j = 0; j < 4; ++j) {
+
+            // use 0-7 of 0-15
+            for (int k = 0; k < 8; ++k) {
+                tb8[k] = state[j * 16 + k];
+            }
+            // tb8 ^ kr
+            for (int k = 0; k < 8; ++k) {
+                tb8[k] = tb8[k] ^ krs[i][j * 8 + k];
+            }
+            // f
+            llwbc_f(tb8);
+
+            // use 7-15 of 0-15
+            for (int k = 0; k < 8; ++k) {
+                state[j * 16 + 8 + k] ^= tb8[k];
+            }
+
+        }
+
+        // p permutation
+        llwbc_p(state);
+
+    }
+
+    // 11-20 round
+    for (int i = 10; i < 20; ++i) {
+        // i = round number
+        // j = byte level index
+        // k = bit level index
+        // 4 * 16 = 64
+        for (int j = 0; j < 4; ++j) {
+
+            // use 0-7 of 0-15
+            for (int k = 0; k < 8; ++k) {
+                tb8[k] = state[j * 16 + k];
+            }
+            // tb8 ^ kr
+            for (int k = 0; k < 8; ++k) {
+                tb8[k] = tb8[k] ^ krs[i][j * 8 + k];
+            }
+            // f
+            llwbc_f(tb8);
+
+            // use 7-15 of 0-15
+            for (int k = 0; k < 8; ++k) {
+                state[j * 16 + 8 + k] ^= tb8[k];
+            }
+
+        }
+
+        // p permutation
+        llwbc_p_inverse(state);
+
+    }
+
+    // 21 round
+    for (int j = 0; j < 4; ++j) {
+
+        // use 0-7 of 0-15
+        for (int k = 0; k < 8; ++k) {
+            tb8[k] = state[j * 16 + k];
+        }
+        // tb8 ^ kr
+        for (int k = 0; k < 8; ++k) {
+            tb8[k] = tb8[k] ^ krs[20][j * 8 + k];
+        }
+        // f
+        llwbc_f(tb8);
+
+        // use 7-15 of 0-15
+        for (int k = 0; k < 8; ++k) {
+            state[j * 16 + 8 + k] ^= tb8[k];
+        }
+
+    }
+
+    // s ^ kw0
+    for (int i = 0; i < 64; ++i) {
+        state[i] = state[i] ^ kws[0][i];
+    }
+
+    // output
+    for (int i = 0; i < 64; ++i) {
+        plain_text[i] = state[i];
+    }
+}
+
