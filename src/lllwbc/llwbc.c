@@ -90,7 +90,7 @@ static inline uint8_t mul3(uint8_t a) {
     return mul2(a) ^ a;
 }
 
-void llwbc_f(bool *state) {
+void llwbc_f(bool *state8) {
     bool u0b[8] = {0};
     bool u1b[8] = {0};
     uint8_t u0 = 0;
@@ -99,8 +99,8 @@ void llwbc_f(bool *state) {
     uint8_t tu1 = 0;
 
     for (int i = 4; i < 8; ++i) {
-        u0b[i] = state[i - 4];
-        u1b[i] = state[i];
+        u0b[i] = state8[i - 4];
+        u1b[i] = state8[i];
     }
 
     bit_to_byte(u0b, &u0);
@@ -120,6 +120,24 @@ void llwbc_f(bool *state) {
 
     u0 = u0 << 4 | u1;
 
-    byte_to_bit(u0, state);
+    byte_to_bit(u0, state8);
+}
+
+void llwbc_p(bool *state64) {
+    // y -> z
+    //z0 = y6, z1 = y11, z2 = y0, z3 = y12, z4 = y10, z5 = y7, z6 = y13, z7 = y1,
+    //z8 = y3, z9 = y15, z10 = y4, z11 = y9, z12 = y2, z13 = y14, z14 = y5, z15 = y8
+
+    // (0,1,.....15) -> (6,11,0,12,10,7,13,1,3,15,4,9,2,14,5,8)
+    uint8_t index[16] = {6, 11, 0, 12, 10, 7, 13, 1, 3, 15, 4, 9, 2, 14, 5, 8};
+    bool temp[64] = {0};
+    for (int i = 0; i < 16; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            temp[i * 4 + j] = state64[index[i] * 4 + j];
+        }
+    }
+    for (int i = 0; i < 64; ++i) {
+        state64[i] = temp[i];
+    }
 }
 

@@ -21,9 +21,15 @@ void llwbc_key_schedule(bool key[128], bool kws[2][64],bool krs[21][32]);
 
 /**
  * 轮函数f
- * @param state 中间状态
+ * @param state8 中间状态
  */
-void llwbc_f(bool state[8]);
+void llwbc_f(bool state8[8]);
+
+/**
+ * p置换
+ * @param state64 中间状态
+ */
+void llwbc_p(bool state64[64]);
 
 #ifdef __cplusplus
 }
