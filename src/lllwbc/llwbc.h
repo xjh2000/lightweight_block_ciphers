@@ -31,6 +31,12 @@ void llwbc_f(bool state8[8]);
  */
 void llwbc_p(bool state64[64]);
 
+/**
+ * p逆置换
+ * @param state64 中间状态
+ */
+void llwbc_p_inverse(bool state64[64]);
+
 #ifdef __cplusplus
 }
 #endif

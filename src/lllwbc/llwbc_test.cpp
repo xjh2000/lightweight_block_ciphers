@@ -106,3 +106,24 @@ TEST_F(LlwbcTest, llwbc_p) {
         EXPECT_EQ(state_except[i], state[i]);
     }
 }
+
+TEST_F(LlwbcTest, llwbc_p_inverse) {
+    // (0,1,.....15) -> (2,7,12,8,10,14,0,5,15,11,4,1,3,6,13,9)
+    uint8_t state[8] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
+    uint8_t state_except[8] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
+    bool stateB[64];
+    for (int i = 0; i < 8; ++i) {
+        byte_to_bit(state[i], stateB + (i * 8));
+    }
+
+    llwbc_p(stateB);
+    llwbc_p_inverse(stateB);
+
+    for (int i = 0; i < 8; ++i) {
+        bit_to_byte(stateB + (i * 8), state + i);
+    }
+
+    for (int i = 0; i < 8; ++i) {
+        EXPECT_EQ(state_except[i], state[i]);
+    }
+}

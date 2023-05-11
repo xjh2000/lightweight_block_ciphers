@@ -141,3 +141,21 @@ void llwbc_p(bool *state64) {
     }
 }
 
+void llwbc_p_inverse(bool *state64) {
+    // z -> y
+    //y0 = z2, y1 = z7, y2 = z12, y3 = z8, y4 = z10, y5 = z14, y6 = z0, y7 = z5,
+    //y8 = z15, y9 = z11, y10 = z4, y11 = z1, y12 = z3, y13 = z6, y14 = z13, y15 = z9.
+
+    // (0,1,.....15) -> (2,7,12,8,10,14,0,5,15,11,4,1,3,6,13,9)
+    uint8_t index[16] = {2,7,12,8,10,14,0,5,15,11,4,1,3,6,13,9};
+    bool temp[64] = {0};
+    for (int i = 0; i < 16; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            temp[i * 4 + j] = state64[index[i] * 4 + j];
+        }
+    }
+    for (int i = 0; i < 64; ++i) {
+        state64[i] = temp[i];
+    }
+}
+
