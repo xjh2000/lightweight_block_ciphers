@@ -3,7 +3,7 @@
 //
 
 #include <stdint.h>
-#include "llwbc.h"
+#include "lllwbc.h"
 #include "../tools/bit.h"
 
 uint8_t cks[21][4] = {
@@ -32,7 +32,7 @@ uint8_t cks[21][4] = {
 
 uint8_t sbox[16] = {0x0B, 0x0F, 0x03, 0x02, 0x0A, 0x0C, 0x09, 0x01, 0x06, 0x07, 0x08, 0x00, 0x0E, 0x05, 0x0D, 0x04};
 
-void llwbc_key_schedule(bool *key, bool (*kws)[64], bool (*krs)[32]) {
+void lllwbc_key_schedule(bool *key, bool (*kws)[64], bool (*krs)[32]) {
     // K = kw || ke
 
     // kw1 = kw
@@ -90,7 +90,7 @@ static inline uint8_t mul3(uint8_t a) {
     return mul2(a) ^ a;
 }
 
-void llwbc_f(bool *state8) {
+void lllwbc_f(bool *state8) {
     bool u0b[8] = {0};
     bool u1b[8] = {0};
     uint8_t u0 = 0;
@@ -123,7 +123,7 @@ void llwbc_f(bool *state8) {
     byte_to_bit(u0, state8);
 }
 
-void llwbc_p(bool *state64) {
+void lllwbc_p(bool *state64) {
     // y -> z
     //z0 = y6, z1 = y11, z2 = y0, z3 = y12, z4 = y10, z5 = y7, z6 = y13, z7 = y1,
     //z8 = y3, z9 = y15, z10 = y4, z11 = y9, z12 = y2, z13 = y14, z14 = y5, z15 = y8
@@ -141,7 +141,7 @@ void llwbc_p(bool *state64) {
     }
 }
 
-void llwbc_p_inverse(bool *state64) {
+void lllwbc_p_inverse(bool *state64) {
     // z -> y
     //y0 = z2, y1 = z7, y2 = z12, y3 = z8, y4 = z10, y5 = z14, y6 = z0, y7 = z5,
     //y8 = z15, y9 = z11, y10 = z4, y11 = z1, y12 = z3, y13 = z6, y14 = z13, y15 = z9.
@@ -159,7 +159,7 @@ void llwbc_p_inverse(bool *state64) {
     }
 }
 
-void llwbc_encrypt(const bool *plain_text, bool *key, bool *cipher_text) {
+void lllwbc_encrypt(const bool *plain_text, bool *key, bool *cipher_text) {
     bool state[64];
     bool kws[2][64];
     bool krs[21][32];
@@ -168,7 +168,7 @@ void llwbc_encrypt(const bool *plain_text, bool *key, bool *cipher_text) {
         state[i] = plain_text[i];
     }
 
-    llwbc_key_schedule(key, kws, krs);
+    lllwbc_key_schedule(key, kws, krs);
 
     // s ^ kw0
     for (int i = 0; i < 64; ++i) {
@@ -194,7 +194,7 @@ void llwbc_encrypt(const bool *plain_text, bool *key, bool *cipher_text) {
                 tb8[k] = tb8[k] ^ krs[i][j * 8 + k];
             }
             // f
-            llwbc_f(tb8);
+            lllwbc_f(tb8);
 
             // use 7-15 of 0-15
             for (int k = 0; k < 8; ++k) {
@@ -204,7 +204,7 @@ void llwbc_encrypt(const bool *plain_text, bool *key, bool *cipher_text) {
         }
 
         // p permutation
-        llwbc_p(state);
+        lllwbc_p(state);
 
     }
 
@@ -225,7 +225,7 @@ void llwbc_encrypt(const bool *plain_text, bool *key, bool *cipher_text) {
                 tb8[k] = tb8[k] ^ krs[i][j * 8 + k];
             }
             // f
-            llwbc_f(tb8);
+            lllwbc_f(tb8);
 
             // use 7-15 of 0-15
             for (int k = 0; k < 8; ++k) {
@@ -235,7 +235,7 @@ void llwbc_encrypt(const bool *plain_text, bool *key, bool *cipher_text) {
         }
 
         // p permutation
-        llwbc_p_inverse(state);
+        lllwbc_p_inverse(state);
 
     }
 
@@ -251,7 +251,7 @@ void llwbc_encrypt(const bool *plain_text, bool *key, bool *cipher_text) {
             tb8[k] = tb8[k] ^ krs[20][j * 8 + k];
         }
         // f
-        llwbc_f(tb8);
+        lllwbc_f(tb8);
 
         // use 7-15 of 0-15
         for (int k = 0; k < 8; ++k) {
@@ -271,7 +271,7 @@ void llwbc_encrypt(const bool *plain_text, bool *key, bool *cipher_text) {
     }
 }
 
-void llwbc_decrypt(const bool *cipher_text, bool *key, bool *plain_text) {
+void lllwbc_decrypt(const bool *cipher_text, bool *key, bool *plain_text) {
     bool state[64];
     bool kws[2][64];
     bool krs[21][32];
@@ -291,7 +291,7 @@ void llwbc_decrypt(const bool *cipher_text, bool *key, bool *plain_text) {
         state[i] = cipher_text[i];
     }
 
-    llwbc_key_schedule(key, kws, krs);
+    lllwbc_key_schedule(key, kws, krs);
 
     // s ^ kw1
     for (int i = 0; i < 64; ++i) {
@@ -317,7 +317,7 @@ void llwbc_decrypt(const bool *cipher_text, bool *key, bool *plain_text) {
                 tb8[k] = tb8[k] ^ krs[i][j * 8 + k];
             }
             // f
-            llwbc_f(tb8);
+            lllwbc_f(tb8);
 
             // use 7-15 of 0-15
             for (int k = 0; k < 8; ++k) {
@@ -327,7 +327,7 @@ void llwbc_decrypt(const bool *cipher_text, bool *key, bool *plain_text) {
         }
 
         // p permutation
-        llwbc_p(state);
+        lllwbc_p(state);
 
     }
 
@@ -348,7 +348,7 @@ void llwbc_decrypt(const bool *cipher_text, bool *key, bool *plain_text) {
                 tb8[k] = tb8[k] ^ krs[i][j * 8 + k];
             }
             // f
-            llwbc_f(tb8);
+            lllwbc_f(tb8);
 
             // use 7-15 of 0-15
             for (int k = 0; k < 8; ++k) {
@@ -358,7 +358,7 @@ void llwbc_decrypt(const bool *cipher_text, bool *key, bool *plain_text) {
         }
 
         // p permutation
-        llwbc_p_inverse(state);
+        lllwbc_p_inverse(state);
 
     }
 
@@ -374,7 +374,7 @@ void llwbc_decrypt(const bool *cipher_text, bool *key, bool *plain_text) {
             tb8[k] = tb8[k] ^ krs[20][j * 8 + k];
         }
         // f
-        llwbc_f(tb8);
+        lllwbc_f(tb8);
 
         // use 7-15 of 0-15
         for (int k = 0; k < 8; ++k) {

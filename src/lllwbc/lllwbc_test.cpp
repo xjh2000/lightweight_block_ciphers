@@ -1,14 +1,14 @@
 //
 // Created by 93462 on 2023/5/10.
 //
-#include "llwbc.h"
+#include "lllwbc.h"
 #include "gtest/gtest.h"
 #include "../tools/bit.h"
 
 class LlwbcTest : public ::testing::Test {
 };
 
-TEST_F(LlwbcTest, llwbc_key_schedule) {
+TEST_F(LlwbcTest, lllwbc_key_schedule) {
     uint8_t key[16] = {0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
                        0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11,};
     uint8_t kws[2][8] = {0};
@@ -49,7 +49,7 @@ TEST_F(LlwbcTest, llwbc_key_schedule) {
         byte_to_bit(key[i], keyB + (i * 8));
     }
 
-    llwbc_key_schedule(keyB, kwsB, krsB);
+    lllwbc_key_schedule(keyB, kwsB, krsB);
 
     for (int i = 0; i < 2; ++i) {
         for (int j = 0; j < 8; ++j) {
@@ -77,17 +77,17 @@ TEST_F(LlwbcTest, llwbc_key_schedule) {
 
 }
 
-TEST_F(LlwbcTest, llwbc_f) {
+TEST_F(LlwbcTest, lllwbc_f) {
     uint8_t state = 0x45;
     uint8_t state_expect = 0xb9;
     bool stateB[8];
     byte_to_bit(state, stateB);
-    llwbc_f(stateB);
+    lllwbc_f(stateB);
     bit_to_byte(stateB, &state);
     EXPECT_EQ(state, state_expect);
 }
 
-TEST_F(LlwbcTest, llwbc_p) {
+TEST_F(LlwbcTest, lllwbc_p) {
     // (0,1,.....15) -> (6,11,0,12,10,7,13,1,3,15,4,9,2,14,5,8)
     uint8_t state[8] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
     uint8_t state_except[8] = {0x6b, 0x0c, 0xa7, 0xd1, 0x3f, 0x49, 0x2e, 0x58};
@@ -96,7 +96,7 @@ TEST_F(LlwbcTest, llwbc_p) {
         byte_to_bit(state[i], stateB + (i * 8));
     }
 
-    llwbc_p(stateB);
+    lllwbc_p(stateB);
 
     for (int i = 0; i < 8; ++i) {
         bit_to_byte(stateB + (i * 8), state + i);
@@ -107,7 +107,7 @@ TEST_F(LlwbcTest, llwbc_p) {
     }
 }
 
-TEST_F(LlwbcTest, llwbc_p_inverse) {
+TEST_F(LlwbcTest, lllwbc_p_inverse) {
     // (0,1,.....15) -> (2,7,12,8,10,14,0,5,15,11,4,1,3,6,13,9)
     uint8_t state[8] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
     uint8_t state_except[8] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
@@ -116,8 +116,8 @@ TEST_F(LlwbcTest, llwbc_p_inverse) {
         byte_to_bit(state[i], stateB + (i * 8));
     }
 
-    llwbc_p(stateB);
-    llwbc_p_inverse(stateB);
+    lllwbc_p(stateB);
+    lllwbc_p_inverse(stateB);
 
     for (int i = 0; i < 8; ++i) {
         bit_to_byte(stateB + (i * 8), state + i);
@@ -128,7 +128,7 @@ TEST_F(LlwbcTest, llwbc_p_inverse) {
     }
 }
 
-TEST_F(LlwbcTest, llwbc_encrypt) {
+TEST_F(LlwbcTest, lllwbc_encrypt) {
     // PlainText : 01 23 45 67 89 ab cd ef
     // Key : 01 23 45 67 89 ab cd ef fe dc ba 98 76 54 32 10
     // CipherText : 4d ac 97 75 8b 96 f3 83
@@ -146,7 +146,7 @@ TEST_F(LlwbcTest, llwbc_encrypt) {
     for (int i = 0; i < 16; ++i) {
         byte_to_bit(key[i], keyB + (i * 8));
     }
-    llwbc_encrypt(plain_textB, keyB, cipher_textB);
+    lllwbc_encrypt(plain_textB, keyB, cipher_textB);
 
     for (int i = 0; i < 8; ++i) {
         bit_to_byte(cipher_textB + (i * 8), cipher_text + i);
@@ -157,7 +157,7 @@ TEST_F(LlwbcTest, llwbc_encrypt) {
     }
 }
 
-TEST_F(LlwbcTest, llwbc_decrypt) {
+TEST_F(LlwbcTest, lllwbc_decrypt) {
     // PlainText : 01 23 45 67 89 ab cd ef
     // Key : 01 23 45 67 89 ab cd ef fe dc ba 98 76 54 32 10
     // CipherText : 4d ac 97 75 8b 96 f3 83
@@ -176,8 +176,8 @@ TEST_F(LlwbcTest, llwbc_decrypt) {
         byte_to_bit(key[i], keyB + (i * 8));
     }
 
-    llwbc_encrypt(plain_textB, keyB, cipher_textB);
-    llwbc_decrypt(cipher_textB, keyB, plain_textB);
+    lllwbc_encrypt(plain_textB, keyB, cipher_textB);
+    lllwbc_decrypt(cipher_textB, keyB, plain_textB);
 
     for (int i = 0; i < 8; ++i) {
         bit_to_byte(plain_textB + (i * 8), plain_text + i);
