@@ -1,12 +1,8 @@
 //
 // Created by xjh on 2023/7/28.
 //
-//
-// Created by 93462 on 2023/5/10.
-//
 #include "craft.h"
 #include "gtest/gtest.h"
-#include "../tools/bit.h"
 
 class CraftTest : public ::testing::Test {
 };
