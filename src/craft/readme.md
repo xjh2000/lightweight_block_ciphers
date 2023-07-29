@@ -1,6 +1,6 @@
 ## note
 
-[craft](https://www.yuque.com/u22757197/cipher-paper/why89pigcfgwwiv2)
+[craft](https://www.yuque.com/u22757197/wg08qk/hkxecm98csbyu4kz)
 
 ## reference
 
