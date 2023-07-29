@@ -11,7 +11,7 @@ extern "C" {
 
 #include <stdbool.h>
 
-void craft_initialize_key(int Key[2][16], int Tweak[16], int dec, int TK[4][16]);
+void craft_key_schedule(int Key[2][16], int Tweak[16], int dec, int TK[4][16]);
 
 void craft_round(int Stt[16], int TK[4][16], int r, bool dec);
 

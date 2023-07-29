@@ -20,7 +20,7 @@ const int RC4[32] = {
 };
 
 
-void craft_initialize_key(int Key[2][16], int Tweak[16], int dec, int TK[4][16]) {
+void craft_key_schedule(int Key[2][16], int Tweak[16], int dec, int TK[4][16]) {
     for (int i = 0; i < 16; i++) {
         TK[0][i] = Key[0][i] ^ Tweak[i];
         TK[1][i] = Key[1][i] ^ Tweak[i];
@@ -84,8 +84,8 @@ void craft(int inputText[16], int outputText[16], int Key[2][16], int Tweak[16],
     }
 
     // generate all TweakKey by Key and Tweak information
-    craft_initialize_key(Key, Tweak, dec, TK);
-// 32 craft_round Function
+    craft_key_schedule(Key, Tweak, dec, TK);
+    // 32 craft_round Function
     for (int i = 0; i < 32; ++i) {
         craft_round(Stt, TK, i, dec);
     }
