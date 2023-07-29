@@ -1,5 +1,6 @@
-#include <stdbool.h>
+
 #include <stdio.h>
+#include "craft.h"
 
 //
 // Created by xjh on 2023/7/28.
@@ -9,10 +10,8 @@ const int P[16] = {0xf, 0xc, 0xd, 0xe, 0xa, 0x9, 0x8, 0xb, 0x6, 0x5, 0x4, 0x7, 0
 const int Q[16] = {0xc, 0xa, 0xf, 0x5, 0xe, 0x8, 0x9, 0x2, 0xb, 0x3, 0x7, 0x4, 0x6, 0x0, 0x1, 0xd};
 
 const int RC3[32] = {
-        0x1, 0x4, 0x2, 0x5, 0x6, 0x7, 0x3,
-        0x1, 0x4, 0x2, 0x5, 0x6, 0x7, 0x3,
-        0x1, 0x4, 0x2, 0x5, 0x6, 0x7, 0x3,
-        0x1, 0x4, 0x2, 0x5, 0x6, 0x7, 0x3,0x1,0x4,0x2,0x5
+        0x1, 0x4, 0x2, 0x5, 0x6, 0x7, 0x3, 0x1, 0x4, 0x2, 0x5, 0x6, 0x7, 0x3, 0x1, 0x4,
+        0x2, 0x5, 0x6, 0x7, 0x3, 0x1, 0x4, 0x2, 0x5, 0x6, 0x7, 0x3, 0x1, 0x4, 0x2, 0x5
 };
 
 const int RC4[32] = {
@@ -20,25 +19,9 @@ const int RC4[32] = {
         0x8, 0x4, 0x2, 0x9, 0xc, 0x6, 0xb, 0x5, 0xa, 0xd, 0xe, 0xf, 0x7, 0x3, 0x1, 0x8
 };
 
-const bool dec = 0; // Encryption :0 , Decryption :1
 
-int Key[2][16] = {
-        {0x2, 0x7, 0xa, 0x6, 0x7, 0x8, 0x1, 0xa, 0x4, 0x3, 0xf, 0x3, 0x6, 0x4, 0xb, 0xc},
-        {0x9, 0x1, 0x6, 0x7, 0x0, 0x8, 0xd, 0x5, 0xf, 0xb, 0xb, 0x5, 0xa, 0xe, 0xf, 0xe}
-};
-
-int Tweak[16] = {
-        0x5, 0x4, 0xc, 0xd, 0x9, 0x4, 0xf, 0xf, 0xd, 0x0, 0x6, 0x7, 0x0, 0xa, 0x5, 0x8
-};
-
-int Stt[16] = {
-        0x5, 0x7, 0x3, 0x4, 0xf, 0x0, 0x0, 0x6, 0xd, 0x8, 0xd, 0x8, 0x8, 0xa, 0x3, 0xe
-};
-
-int TK[4][16] = {{0}};
-
-void Initialize_key () {
-    for (int i=0; i<16; i++){
+void craft_initialize_key(int Key[2][16], int Tweak[16], int dec, int TK[4][16]) {
+    for (int i = 0; i < 16; i++) {
         TK[0][i] = Key[0][i] ^ Tweak[i];
         TK[1][i] = Key[1][i] ^ Tweak[i];
         TK[2][i] = Key[0][i] ^ Tweak[Q[i]];
@@ -46,60 +29,70 @@ void Initialize_key () {
     }
 
     if (dec)
-        for(int j=0; j<4; j++)
-            for(int i=0; i<4; i++){
-                TK[j][i] ^= (TK[j][i+8] ^ TK[j][i+12]);
-                TK[j][i+4] ^= TK[j][i+12];
+        for (int j = 0; j < 4; j++)
+            for (int i = 0; i < 4; i++) {
+                TK[j][i] ^= (TK[j][i + 8] ^ TK[j][i + 12]);
+                TK[j][i + 4] ^= TK[j][i + 12];
             }
 }
 
-void Round(int r) {
-    for(int i=0; i<4; i++){
+void craft_round(int Stt[16], int TK[4][16], int r, bool dec) {
+    for (int i = 0; i < 4; i++) {
         // MixColumn
-        Stt[i] ^= (Stt[i+8] ^ Stt[i+12]);
-        Stt[i+4] ^= Stt[i+12];
+        Stt[i] ^= (Stt[i + 8] ^ Stt[i + 12]);
+        Stt[i + 4] ^= Stt[i + 12];
     }
 
     int ind = r;
 
     if (dec)
-        ind= 31 - r;
+        ind = 31 - r;
 
     Stt[4] ^= RC4[ind];
 
     // AddConstant
     Stt[5] ^= RC3[ind];
 
-    for (int i=0; i<16; i++)
+    for (int i = 0; i < 16; i++)
         // AddTweakey
-        Stt[i] ^= TK[ind%4][i];
+        Stt[i] ^= TK[ind % 4][i];
 
-    if(r != 31) {
+    if (r != 31) {
         int Temp[16];
 
-        for(int i=0; i<16; i++)
+        for (int i = 0; i < 16; i++)
             // Permutation
             Temp[P[i]] = Stt[i];
 
-        for (int i=0; i<16; i++)
+        for (int i = 0; i < 16; i++)
             // SBox
             Stt[i] = S[Temp[i]];
     }
 }
 
-int main() {
-    Initialize_key();
 
-    int r;
-    for (r = 0; r < 32; r++) {
-        Round(r);
+void craft(int inputText[16], int outputText[16], int Key[2][16], int Tweak[16], bool dec) {
+
+    // TweakKey
+    int TK[4][16] = {{0}};
+
+    // InterState
+    int Stt[16] = {0};
+// input to inter State
+    for (int i = 0; i < 16; ++i) {
+        Stt[i] = inputText[i];
     }
 
-    for (int i = 0; i < 16; i++) {
-        printf("Stt[%d]: %x\n", i, Stt[i]);
+    // generate all TweakKey by Key and Tweak information
+    craft_initialize_key(Key, Tweak, dec, TK);
+// 32 craft_round Function
+    for (int i = 0; i < 32; ++i) {
+        craft_round(Stt, TK, i, dec);
     }
-
-    printf("r: %d\n", r);
-
-    return 0;
+    // Inter State to Output
+    for (int i = 0; i < 16; ++i) {
+        outputText[i] = Stt[i];
+    }
 }
+
+
