@@ -87,7 +87,7 @@ void craft(int inputText[16], int outputText[16], int Key[2][16], int Tweak[16],
     craft_key_schedule(Key, Tweak, dec, TK);
     // 32 craft_round Function
     for (int i = 0; i < 32; ++i) {
-        craft_round(Stt, TK, i, dec);
+          craft_round(Stt, TK, i, dec);
     }
     // Inter State to Output
     for (int i = 0; i < 16; ++i) {
