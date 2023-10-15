@@ -267,3 +267,82 @@ TEST_F(LlwbcTest, lllwbc_encrypt_avalanche){
     //概率体现的是严格雪崩准则，avg体现的是雪崩效应
     printf("范围:%f~%f 平均: %f 概率:%f~%f  avg=%f\n", min, max, zfw / 1000.00 / 64.00, mingl, maxgl, zgv / 64.00);
 }
+
+TEST_F(LlwbcTest, lllwbc_encrypt_avalanche_1){
+    int  j = 0;
+    uint8_t plain_text[8];
+    bool plain_textB[64] = { false };
+    uint8_t plain_text_const[8] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef };
+    uint8_t plain_text1[8];
+    bool plain_textB1[64] = { false };
+    uint8_t key[16] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10 };
+    bool keyB[128] = { false };
+    uint8_t cipher[8] = { 0 };
+    bool cipherB[64] = { false };
+    uint8_t cipher1[8] = { 0 };
+    bool cipherB1[64] = { false };
+    uint8_t cipher_text_expect[8] = { 0x4d, 0xac, 0x97, 0x75, 0x8b, 0x96, 0xf3, 0x83 };
+    int c[8] = { 0 };
+    int sum[64] = { 0 };
+    double min = 64, max = 0;
+    double mingl = 64, maxgl = 0;
+    double avgv = 0;
+    double avgglv = 0;
+    for (j = 0; j < 1000; j++)
+    {
+        memcpy(plain_text, plain_text_const, sizeof(plain_text_const));
+        for (int i = 0; i < 16; ++i) {
+            byte_to_bit(key[i], keyB + (i * 8));
+        }
+        for (int i = 0; i < 8; ++i) {
+            byte_to_bit(plain_text[i], plain_textB + (i * 8));
+        }
+        lllwbc_encrypt(plain_textB, keyB, cipherB);
+        for (int i = 0; i < 8; ++i) {
+            bit_to_byte(cipherB + (i * 8), cipher + i);
+        }
+
+        for (int index = 0; index < 8; index++)
+        {
+            for (int rot = 0; rot < 8; rot++)
+            {
+                memcpy(plain_text1, plain_text_const, sizeof(plain_text_const));
+                plain_text1[index] ^= 0x01 << rot;//分别对明文的64位取反
+                for (int i = 0; i < 8; ++i) {
+                    byte_to_bit(plain_text1[i], plain_textB1 + (i * 8));
+                }
+
+                lllwbc_encrypt(plain_textB1, keyB, cipherB1);
+
+
+
+                for (int i = 0; i < 64; i++)  	cipherB1[i] ^= cipherB[i];//求距离值
+                int count_number = 0;
+                for (int c = 0; c < 64; c++)
+                {
+                    if (cipherB1[c] & 1)
+                    {
+                        sum[c]++;//每一位所对应的距离值的和
+                        count_number++;
+                    }
+                }
+                if (min > count_number) min = count_number;//改变1比特最少距离值
+                if (max < count_number) max = count_number;//改变1比特最大距离值
+            }
+        }
+        memcpy(plain_text_const, cipher, sizeof(cipher));
+    }
+    double zfw = 0;
+    double zgv = 0;
+    for (int i = 0; i < 64; i++)
+    {
+        //printf("%d \n",sum[i]);
+        double avf = sum[i] / 1000.00 / 64.00;//输出改变的平均概率
+        if (mingl > avf) mingl = avf;
+        if (maxgl < avf) maxgl = avf;
+        zfw += sum[i];
+        zgv += avf;
+    }
+    // 概率体现的是严格雪崩准则，avg体现的是雪崩效应
+    printf("范围:%f~%f 平均: %f 概率:%f~%f  avg=%f\n", min, max, zfw / 1000.00 / 64.00, mingl, maxgl, zgv / 64.00);
+}
