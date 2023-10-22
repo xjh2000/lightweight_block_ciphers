@@ -8,3 +8,6 @@
 - aes
 - midori
 - lllwbc
+
+## easy to run 
+windows or linux just open with CLion(have bundle all toolchain) or Visual Studio(should install Windows desktop development toolchain )
