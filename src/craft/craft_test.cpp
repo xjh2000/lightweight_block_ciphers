@@ -25,10 +25,12 @@ TEST_F(CraftTest, craft) {
     int outputText[16] = {0};
     int expect_output_text[16] = {0xa, 0x1, 0x7, 0xd, 0x6, 0xb, 0xd, 0x4, 0xb, 0xe, 0xe, 0xb, 0x9, 0x9, 0x6, 0xf};
     craft(inputText, outputText, Key, Tweak, false);
-
+    std::cout << "craft test start" << std::endl;
     for (int i = 0; i < 16; ++i) {
         EXPECT_EQ(expect_output_text[i], outputText[i]);
     }
+
+    std::cout << "i am xjh" << std::endl;
 }
 
 TEST_F(CraftTest, craft_decrypt) {
